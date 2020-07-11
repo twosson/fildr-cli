@@ -3,7 +3,7 @@ FIldr Client 星际医生客户端
 
 ```
 ├── cmd
-│   └── fil_pusher # 命令入口
+│   └── fildr # 命令入口
 ├── docs # 文档
 └── internal
     ├── collector # 指标收集

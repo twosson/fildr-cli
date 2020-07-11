@@ -4,6 +4,7 @@ import (
 	"context"
 	"fil-pusher/internal/log"
 	"fil-pusher/internal/module"
+	"fil-pusher/internal/modules/collector"
 	"fmt"
 )
 
@@ -30,7 +31,7 @@ func NewRunner(ctx context.Context, logger log.Logger, options Options) (*Runner
 	}
 	r.moduleManager = moduleManager
 
-	moduleList, err := initModules(ctx)
+	moduleList, err := initModules(ctx, options)
 	if err != nil {
 		return nil, fmt.Errorf("initializing modules: %w", err)
 	}
@@ -75,8 +76,16 @@ func initModuleManager(logger log.Logger) (*module.Manager, error) {
 	return moduleManager, nil
 }
 
-func initModules(ctx context.Context) ([]module.Module, error) {
+func initModules(ctx context.Context, options Options) ([]module.Module, error) {
 	var list []module.Module
+
+	collectorOptions := collector.Options{}
+	collector, err := collector.New(ctx, collectorOptions)
+	if err != nil {
+		return nil, fmt.Errorf("initialize collector module: %w", err)
+	}
+
+	list = append(list, collector)
 
 	return list, nil
 }

@@ -18,13 +18,13 @@ func New(ctx context.Context, options Options) (*Collector, error) {
 }
 
 func (c *Collector) Name() string {
-	panic("implement me")
+	return "collector"
 }
 
 func (c *Collector) Start() error {
-	panic("implement me")
+	return nil
 }
 
 func (c *Collector) Stop() {
-	panic("implement me")
+
 }

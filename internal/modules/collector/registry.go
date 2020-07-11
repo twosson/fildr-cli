@@ -1,6 +1,6 @@
 package collector
 
-import "fil-pusher/internal/collector/metric/node"
+import "fil-pusher/internal/modules/collector/metric/node"
 
 func init() {
 	registerCollector("node", "cpu", node.NewCpuCollector)

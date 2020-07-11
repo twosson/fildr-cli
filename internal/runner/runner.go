@@ -2,8 +2,8 @@ package runner
 
 import (
 	"context"
-	"fil-pusher/internal/collector/module"
 	"fil-pusher/internal/log"
+	"fil-pusher/internal/module"
 	"fmt"
 )
 
@@ -31,8 +31,17 @@ func NewRunner(ctx context.Context, logger log.Logger, options Options) (*Runner
 	r.moduleManager = moduleManager
 
 	moduleList, err := initModules(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("initializing modules: %w", err)
+	}
 
-	return &Runner{}, nil
+	for _, mod := range moduleList {
+		if err := moduleManager.Register(mod); err != nil {
+			return nil, fmt.Errorf("loading module %s: %w", mod.Name(), err)
+		}
+	}
+
+	return &r, nil
 }
 
 func (r *Runner) Start(ctx context.Context, startupCh, shutdownCh chan bool) {

@@ -1,7 +1,7 @@
 package node
 
 import (
-	"fil-pusher/internal/pkg"
+	"fil-pusher/internal/pkg/collector"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"
@@ -23,7 +23,7 @@ type cpuCollector struct {
 	cpu *prometheus.Desc
 }
 
-func NewCpuCollector() (pkg.Collector, error) {
+func NewCpuCollector() (collector.Collector, error) {
 	fs, err := procfs.NewFS("/proc")
 	if err != nil {
 		return nil, fmt.Errorf("failed to pen procfs: %w", err)

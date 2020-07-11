@@ -3,6 +3,8 @@ package collector
 import (
 	"context"
 	"fil-pusher/internal/module"
+	"fmt"
+	"time"
 )
 
 type Options struct {
@@ -22,6 +24,15 @@ func (c *Collector) Name() string {
 }
 
 func (c *Collector) Start() error {
+	go func() {
+		instance := GetInstance("node")
+		instance.SetJob("test")
+		instance.SetInstance("aaabc")
+		for range time.Tick(time.Second * 10) {
+			fmt.Println("print metrics ...")
+			fmt.Println(instance.GetMetrics())
+		}
+	}()
 	return nil
 }
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fildr-cli/internal/config"
 	"fildr-cli/internal/module"
-	"fildr-cli/internal/modules/collector/metric/node"
+	_ "fildr-cli/internal/modules/collector/metric/node"
 	"fmt"
 	"time"
 )
@@ -17,17 +17,17 @@ type Collector struct {
 
 // TODO 这里需要兼容多个操作系统
 func New(ctx context.Context, config *config.TomlConfig) (*Collector, error) {
-	for ns := range config.Collectors {
-		if ns == "node" {
-			metrics := config.Collectors["node"].Metric
-			for i := range metrics {
-				if metrics[i] == "cpu" {
-					RegisterCollector(ns, "cpu", node.NewCpuCollector)
-				}
-			}
-			fmt.Println(ns)
-		}
-	}
+	//for ns := range config.Collectors {
+	//	if ns == "node" {
+	//		metrics := config.Collectors["node"].Metric
+	//		for i := range metrics {
+	//			if metrics[i] == "cpu" {
+	//				RegisterCollector(ns, "cpu", node.NewCpuCollector)
+	//			}
+	//		}
+	//		fmt.Println(ns)
+	//	}
+	//}
 	return &Collector{config: config}, nil
 }
 

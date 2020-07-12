@@ -12,11 +12,11 @@ import (
 var _ module.Module = (*Collector)(nil)
 
 type Collector struct {
+	config *config.TomlConfig
 }
 
+// TODO 这里需要兼容多个操作系统
 func New(ctx context.Context, config *config.TomlConfig) (*Collector, error) {
-	//sysType := runtime.GOOS
-	//if sysType == "linux" {
 	for ns := range config.Collectors {
 		if ns == "node" {
 			metrics := config.Collectors["node"].Metric
@@ -28,8 +28,7 @@ func New(ctx context.Context, config *config.TomlConfig) (*Collector, error) {
 			fmt.Println(ns)
 		}
 	}
-	//}
-	return &Collector{}, nil
+	return &Collector{config: config}, nil
 }
 
 func (c *Collector) Name() string {
@@ -41,7 +40,7 @@ func (c *Collector) Start() error {
 		instance := GetInstance("node")
 		instance.SetJob("test")
 		instance.SetInstance("aaabc")
-		for range time.Tick(time.Second * 10) {
+		for range time.Tick(time.Second * time.Duration(c.config.Gateway.Evaluation)) {
 			fmt.Println("print metrics ...")
 			fmt.Println(instance.GetMetrics())
 		}

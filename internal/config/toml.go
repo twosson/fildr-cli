@@ -30,8 +30,9 @@ type TomlConfig struct {
 }
 
 type gateway struct {
-	Url      string
-	Instance string
+	Url        string
+	Instance   string
+	Evaluation int64
 }
 
 type collector struct {

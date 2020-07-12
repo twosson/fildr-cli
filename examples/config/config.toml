@@ -1,6 +1,7 @@
 [gateway]
 url = "https://api.fildr.com"
 instance = "hostname1"
+evaluation = 10
 
 [collectors]
     [collectors.node]

@@ -39,14 +39,14 @@ func (c *Collector) Stop() {
 
 }
 
-func (c *Collector) execute(namespace string, job string, instance string, evaluation time.Duration) {
-	go func(n string, j string, i string, e time.Duration) {
-		instance := GetInstance(n)
-		instance.SetJob(j)
-		instance.SetInstance(i)
-		for range time.Tick(time.Second * e) {
-			fmt.Println("print metrics ...")
-			fmt.Println(instance.GetMetrics())
-		}
-	}(namespace, job, instance, evaluation)
+func (c *Collector) execute(namespace string, job string, instanceName string, evaluation time.Duration) {
+	//go func() {
+	instance := GetInstance(namespace)
+	//instance.SetJob(job)
+	//instance.SetInstance(instanceName)
+	for range time.Tick(time.Second * evaluation) {
+		fmt.Println("print metrics ...")
+		fmt.Println(instance.GetMetrics())
+	}
+	//}()
 }

@@ -173,7 +173,7 @@ func build() {
 	newPath := filepath.Join(".", "build")
 	os.MkdirAll(newPath, 0755)
 
-	artifact := "octant"
+	artifact := "fildr-cli"
 	if runtime.GOOS == "windows" {
 		artifact = "octant.exe"
 	}

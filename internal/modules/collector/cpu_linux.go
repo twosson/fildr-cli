@@ -1,9 +1,8 @@
 // +build !nocpu
 
-package node
+package collector
 
 import (
-	collector2 "fildr-cli/internal/modules/collector"
 	"fildr-cli/internal/pkg/collector"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
@@ -14,7 +13,7 @@ import (
 const cpuCollectorSubsystem = "cpu"
 
 func init() {
-	collector2.RegisterCollector("node", "cpu", NewCpuCollector)
+	registerCollector("node", "cpu", NewCpuCollector)
 }
 
 var (

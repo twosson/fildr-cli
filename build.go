@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"time"
 )
 
@@ -29,10 +30,17 @@ func main() {
 
 	rootCmd.AddCommand(
 		&cobra.Command{
-			Use:   "vet",
-			Short: "lint server code",
+			Use:   "go-install",
+			Short: "install build tools",
 			Run: func(cmd *cobra.Command, args []string) {
-				vet()
+				goInstall()
+			},
+		},
+		&cobra.Command{
+			Use:   "generate",
+			Short: "update generated artifacts",
+			Run: func(cmd *cobra.Command, args []string) {
+				generate()
 			},
 		},
 		&cobra.Command{
@@ -40,6 +48,34 @@ func main() {
 			Short: "version",
 			Run: func(cmd *cobra.Command, args []string) {
 				version()
+			},
+		},
+		&cobra.Command{
+			Use:   "vet",
+			Short: "lint server code",
+			Run: func(cmd *cobra.Command, args []string) {
+				vet()
+			},
+		},
+		&cobra.Command{
+			Use:   "test",
+			Short: "run server tests",
+			Run: func(cmd *cobra.Command, args []string) {
+				test()
+			},
+		},
+		&cobra.Command{
+			Use:   "build",
+			Short: "server build, skipping tests",
+			Run: func(cmd *cobra.Command, args []string) {
+				build()
+			},
+		},
+		&cobra.Command{
+			Use:   "release",
+			Short: "tag and push a release",
+			Run: func(cmd *cobra.Command, args []string) {
+				release()
 			},
 		},
 	)
@@ -131,6 +167,17 @@ func vet() {
 
 func test() {
 	runCmd("go", nil, "test", "-v", "./internal/...", "./pkg/...")
+}
+
+func build() {
+	newPath := filepath.Join(".", "build")
+	os.MkdirAll(newPath, 0755)
+
+	artifact := "octant"
+	if runtime.GOOS == "windows" {
+		artifact = "octant.exe"
+	}
+	runCmd("go", nil, "build", "-o", "build/"+artifact, GO_FLAGS, "-v", "./cmd/octant")
 }
 
 func removeFakes() {

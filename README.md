@@ -1,6 +1,10 @@
 # fildr-cli
 FIldr Client 星际医生客户端，监控Filecoin机器硬件、报警以及自动抵押等功能。它皆在成为Filecoin miner  工具包的一部分，以获取洞察力和简化Filecoin分布式储存的复杂性。
 
+# 特别说明
+
+FILdr Client 可用独立运行，后端服务器(可选)可自行开发以及搭配开源系统，比如prometheus gateway进行指标收集。
+
 ## 特征
 
 - 硬件指标收集

@@ -2,7 +2,7 @@ package collector
 
 import (
 	"errors"
-	"fil-pusher/internal/pkg/collector"
+	"fildr-cli/internal/pkg/collector"
 	"github.com/prometheus/client_golang/prometheus"
 	"sync"
 	"time"

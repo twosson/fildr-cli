@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fil-pusher/internal/command"
+	"fildr-cli/internal/command"
 	"math/rand"
 	"time"
 )

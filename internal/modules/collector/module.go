@@ -2,7 +2,7 @@ package collector
 
 import (
 	"context"
-	"fil-pusher/internal/module"
+	"fildr-cli/internal/module"
 	"fmt"
 	"time"
 )

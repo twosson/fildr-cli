@@ -1,7 +1,7 @@
 package module
 
 import (
-	"fil-pusher/internal/log"
+	"fildr-cli/internal/log"
 	"github.com/pkg/errors"
 )
 

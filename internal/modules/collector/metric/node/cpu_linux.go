@@ -1,7 +1,7 @@
 package node
 
 import (
-	"fil-pusher/internal/pkg/collector"
+	"fildr-cli/internal/pkg/collector"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"

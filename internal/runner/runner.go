@@ -2,9 +2,9 @@ package runner
 
 import (
 	"context"
-	"fil-pusher/internal/log"
-	"fil-pusher/internal/module"
-	"fil-pusher/internal/modules/collector"
+	"fildr-cli/internal/log"
+	"fildr-cli/internal/module"
+	"fildr-cli/internal/modules/collector"
 	"fmt"
 )
 

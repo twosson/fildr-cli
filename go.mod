@@ -1,4 +1,4 @@
-module fil-pusher
+module fildr-cli
 
 go 1.14
 

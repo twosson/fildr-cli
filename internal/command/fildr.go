@@ -2,8 +2,8 @@ package command
 
 import (
 	"context"
-	"fil-pusher/internal/log"
-	runner2 "fil-pusher/internal/runner"
+	"fildr-cli/internal/log"
+	runner2 "fildr-cli/internal/runner"
 	"flag"
 	"fmt"
 	"github.com/spf13/cobra"

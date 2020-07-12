@@ -18,7 +18,7 @@ var (
 	}
 )
 
-func registerCollector(namespace string, collector string, factory func() (collector.Collector, error)) {
+func RegisterCollector(namespace string, collector string, factory func() (collector.Collector, error)) {
 	factories[namespace][collector] = factory
 }
 

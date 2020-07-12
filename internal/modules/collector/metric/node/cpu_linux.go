@@ -1,3 +1,5 @@
+// +build !nocpu
+
 package node
 
 import (

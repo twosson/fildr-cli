@@ -1,9 +1,10 @@
-package collector
+package node
 
 import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fildr-cli/internal/log"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/expfmt"
@@ -14,51 +15,47 @@ import (
 
 type Instance struct {
 	R *prometheus.Registry
-	C *FilCollector
+	C *NodeCollector
 
 	job      string
 	instance string
 }
 
-func GetInstance(namespace string) *Instance {
+func GetInstance() (*Instance, error) {
+	node, err := NewNodeCollector(log.NopLogger().Named("node-collector"))
+	if err != nil {
+		return nil, err
+	}
 	instance := &Instance{
 		R:        prometheus.NewRegistry(),
-		C:        NewFilCollector(namespace),
+		C:        node,
 		job:      "defaultJobName",
 		instance: "defaultInstanceName",
 	}
 	if instance.R == nil || instance.C == nil || instance.R.Register(instance.C) != nil {
-		instance = nil
+		return nil, err
 	}
-	return instance
+	return instance, nil
 }
 
-func (i *Instance) GetMetrics() string {
+func (i *Instance) GetMetrics() (string, error) {
 	if i == nil {
-		return ""
+		return "", nil
 	}
 
 	mfs, err := i.R.Gather()
 	if err != nil {
-		fmt.Println("gather err = ", err)
+		return "", err
 	}
 	buf := &bytes.Buffer{}
 	enc := expfmt.NewEncoder(buf, expfmt.FmtText)
 
 	for _, mf := range mfs {
-		for _, m := range mf.GetMetric() {
-			for _, l := range m.GetLabel() {
-				if l.GetName() == "job" {
-					fmt.Println("metric", mf.GetName(), m, "already contains a job label")
-				}
-			}
-		}
-
 		if err := enc.Encode(mf); err != nil {
-			fmt.Println("encode error", err)
+			return "", nil
 		}
 	}
-	return buf.String()
+	return buf.String(), nil
 }
 
 func (i *Instance) PushMetrics(gateway string, data string) error {

@@ -5,7 +5,7 @@ import (
 	"fildr-cli/internal/config"
 	"fildr-cli/internal/log"
 	"fildr-cli/internal/module"
-	"fildr-cli/internal/modules/collector"
+	"fildr-cli/internal/modules/node"
 	"fmt"
 )
 
@@ -85,12 +85,12 @@ func initModuleManager(logger log.Logger) (*module.Manager, error) {
 func initModules(ctx context.Context, config *config.TomlConfig) ([]module.Module, error) {
 	var list []module.Module
 
-	collector, err := collector.New(ctx, config)
+	nodeCollector, err := node.New(ctx, config)
 	if err != nil {
-		return nil, fmt.Errorf("initialize collector module: %w", err)
+		return nil, fmt.Errorf("initialize node collector module: %w", err)
 	}
 
-	list = append(list, collector)
+	list = append(list, nodeCollector)
 
 	return list, nil
 }

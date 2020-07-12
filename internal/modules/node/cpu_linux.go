@@ -1,6 +1,6 @@
 // +build !nocpu
 
-package collector
+package node
 
 import (
 	"fildr-cli/internal/log"
@@ -15,7 +15,7 @@ import (
 const cpuCollectorSubsystem = "cpu"
 
 func init() {
-	registerCollector("node", "cpu", NewCpuCollector)
+	registerCollector("cpu", NewCpuCollector)
 }
 
 var (
@@ -38,9 +38,9 @@ type cpuCollector struct {
 	logger             log.Logger
 }
 
-func NewCpuCollector() (Collector, error) {
+func NewCpuCollector(logger log.Logger) (Collector, error) {
 
-	fs, err := procfs.NewFS("/proc")
+	fs, err := procfs.NewFS(procPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pen procfs: %w", err)
 	}

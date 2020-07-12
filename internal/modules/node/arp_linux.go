@@ -1,4 +1,4 @@
-package collector
+package node
 
 import (
 	"fildr-cli/internal/log"

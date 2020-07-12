@@ -2,14 +2,13 @@ package collector
 
 import (
 	"errors"
-	"fildr-cli/internal/pkg/collector"
 	"github.com/prometheus/client_golang/prometheus"
 	"sync"
 	"time"
 )
 
 var (
-	factories = map[string]map[string]func() (collector.Collector, error){
+	factories = map[string]map[string]func() (Collector, error){
 		"node":   {},
 		"gpu":    {},
 		"daemon": {},
@@ -18,19 +17,23 @@ var (
 	}
 )
 
-func registerCollector(namespace string, collector string, factory func() (collector.Collector, error)) {
+func registerCollector(namespace string, collector string, factory func() (Collector, error)) {
 	factories[namespace][collector] = factory
 }
 
+type Collector interface {
+	Update(ch chan<- prometheus.Metric) error
+}
+
 type FilCollector struct {
-	Collectors map[string]collector.Collector
+	Collectors map[string]Collector
 
 	scrapeDurationDesc *prometheus.Desc
 	scrapeSuccessDesc  *prometheus.Desc
 }
 
 func NewFilCollector(namespace string) *FilCollector {
-	collectors := make(map[string]collector.Collector)
+	collectors := make(map[string]Collector)
 
 	for key, f := range factories[namespace] {
 		collector, err := f()
@@ -67,7 +70,7 @@ func (f *FilCollector) Collect(ch chan<- prometheus.Metric) {
 	wg.Add(len(f.Collectors))
 
 	for name, c := range f.Collectors {
-		go func(name string, c collector.Collector) {
+		go func(name string, c Collector) {
 			f.execute(name, c, ch)
 			wg.Done()
 		}(name, c)
@@ -76,7 +79,7 @@ func (f *FilCollector) Collect(ch chan<- prometheus.Metric) {
 	wg.Wait()
 }
 
-func (f *FilCollector) execute(name string, c collector.Collector, ch chan<- prometheus.Metric) {
+func (f *FilCollector) execute(name string, c Collector, ch chan<- prometheus.Metric) {
 	begin := time.Now()
 	err := c.Update(ch)
 	duration := time.Since(begin)

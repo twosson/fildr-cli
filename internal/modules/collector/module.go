@@ -8,21 +8,21 @@ import (
 	"time"
 )
 
-var _ module.Module = (*Collector)(nil)
+var _ module.Module = (*CollectorModule)(nil)
 
-type Collector struct {
+type CollectorModule struct {
 	config *config.TomlConfig
 }
 
-func New(ctx context.Context, config *config.TomlConfig) (*Collector, error) {
-	return &Collector{config: config}, nil
+func New(ctx context.Context, config *config.TomlConfig) (*CollectorModule, error) {
+	return &CollectorModule{config: config}, nil
 }
 
-func (c *Collector) Name() string {
+func (c *CollectorModule) Name() string {
 	return "collector"
 }
 
-func (c *Collector) Start() error {
+func (c *CollectorModule) Start() error {
 	evaluation := c.config.Gateway.Evaluation
 	if evaluation == 0 {
 		evaluation = 5
@@ -35,18 +35,18 @@ func (c *Collector) Start() error {
 	return nil
 }
 
-func (c *Collector) Stop() {
+func (c *CollectorModule) Stop() {
 
 }
 
-func (c *Collector) execute(namespace string, job string, instanceName string, evaluation time.Duration) {
-	//go func() {
-	instance := GetInstance(namespace)
-	//instance.SetJob(job)
-	//instance.SetInstance(instanceName)
-	for range time.Tick(time.Second * evaluation) {
-		fmt.Println("print metrics ...")
-		fmt.Println(instance.GetMetrics())
-	}
-	//}()
+func (c *CollectorModule) execute(namespace string, job string, instanceName string, evaluation time.Duration) {
+	go func() {
+		instance := GetInstance(namespace)
+		instance.SetJob(job)
+		instance.SetInstance(instanceName)
+		for range time.Tick(time.Second * evaluation) {
+			fmt.Println("print metrics ...")
+			fmt.Println(instance.GetMetrics())
+		}
+	}()
 }

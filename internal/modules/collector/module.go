@@ -4,7 +4,6 @@ import (
 	"context"
 	"fildr-cli/internal/config"
 	"fildr-cli/internal/module"
-	_ "fildr-cli/internal/modules/collector/metric/node"
 	"fmt"
 	"time"
 )
@@ -15,19 +14,7 @@ type Collector struct {
 	config *config.TomlConfig
 }
 
-// TODO 这里需要兼容多个操作系统
 func New(ctx context.Context, config *config.TomlConfig) (*Collector, error) {
-	//for ns := range config.Collectors {
-	//	if ns == "node" {
-	//		metrics := config.Collectors["node"].Metric
-	//		for i := range metrics {
-	//			if metrics[i] == "cpu" {
-	//				RegisterCollector(ns, "cpu", node.NewCpuCollector)
-	//			}
-	//		}
-	//		fmt.Println(ns)
-	//	}
-	//}
 	return &Collector{config: config}, nil
 }
 
@@ -36,18 +23,30 @@ func (c *Collector) Name() string {
 }
 
 func (c *Collector) Start() error {
-	go func() {
-		instance := GetInstance("node")
-		instance.SetJob("test")
-		instance.SetInstance("aaabc")
-		for range time.Tick(time.Second * time.Duration(c.config.Gateway.Evaluation)) {
-			fmt.Println("print metrics ...")
-			fmt.Println(instance.GetMetrics())
-		}
-	}()
+	evaluation := c.config.Gateway.Evaluation
+	if evaluation == 0 {
+		evaluation = 5
+	}
+
+	instance := c.config.Gateway.Instance
+
+	c.execute("node", "node", instance, time.Duration(evaluation))
+
 	return nil
 }
 
 func (c *Collector) Stop() {
 
+}
+
+func (c *Collector) execute(namespace string, job string, instance string, evaluation time.Duration) {
+	go func(n string, j string, i string, e time.Duration) {
+		instance := GetInstance(n)
+		instance.SetJob(j)
+		instance.SetInstance(i)
+		for range time.Tick(time.Second * e) {
+			fmt.Println("print metrics ...")
+			fmt.Println(instance.GetMetrics())
+		}
+	}(namespace, job, instance, evaluation)
 }

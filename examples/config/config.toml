@@ -2,17 +2,3 @@
 url = "https://api.fildr.com"
 instance = "hostname1"
 evaluation = 10
-
-[collectors]
-    [collectors.node]
-    metric = ["cpu", "gpu", "disk", "net"]
-
-    [collectors.daemon]
-    metric = ["chain"]
-
-    [collectors.miner]
-    metric = ["chain"]
-
-    [collectors.worker]
-    metric = ["chain"]
-

@@ -41,14 +41,18 @@ type cpuCollector struct {
 
 func NewCpuCollector() (collector.Collector, error) {
 
-	fs, err := procfs.NewFS(*procPath)
+	fs, err := procfs.NewFS("/proc")
 	if err != nil {
 		return nil, fmt.Errorf("failed to pen procfs: %w", err)
 	}
 
 	return &cpuCollector{
-		fs:  fs,
-		cpu: nodeCPUSecondsDesc,
+		fs: fs,
+		cpu: prometheus.NewDesc(
+			prometheus.BuildFQName("node", cpuCollectorSubsystem, "seconds_total"),
+			"Seconds the cpus spent in each mode.",
+			[]string{"cpu", "mode"}, nil,
+		),
 		cpuInfo: prometheus.NewDesc(
 			prometheus.BuildFQName("node", cpuCollectorSubsystem, "info"),
 			"CPU information from /proc/cpuinfo.",
@@ -76,6 +80,12 @@ func NewCpuCollector() (collector.Collector, error) {
 
 func (c *cpuCollector) Update(ch chan<- prometheus.Metric) error {
 	if err := c.updateInfo(ch); err != nil {
+		return err
+	}
+	if err := c.updateStat(ch); err != nil {
+		return err
+	}
+	if err := c.updateThermalThrottle(ch); err != nil {
 		return err
 	}
 	return nil
@@ -106,7 +116,7 @@ func (c *cpuCollector) updateInfo(ch chan<- prometheus.Metric) error {
 
 // updateThermalThrottle reads /sys/devices/system/cpu/cpu* and expose thermal throttle statistics.
 func (c *cpuCollector) updateThermalThrottle(ch chan<- prometheus.Metric) error {
-	cpus, err := filepath.Glob(sysFilePath("devices/system/cpu/cpu[0-9]*"))
+	cpus, err := filepath.Glob(filepath.Join("devices/system/cpu/cpu[0-9]*"))
 	if err != nil {
 		return err
 	}

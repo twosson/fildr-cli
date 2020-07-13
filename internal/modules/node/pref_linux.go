@@ -23,7 +23,7 @@ var (
 )
 
 func init() {
-	registerCollector(perfSubsystem, NewPerfCollector)
+	//registerCollector(perfSubsystem, NewPerfCollector)
 }
 
 // perfTracepointFlagToTracepoints returns the set of configured tracepoints.

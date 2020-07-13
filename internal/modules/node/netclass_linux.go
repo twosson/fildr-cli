@@ -33,7 +33,7 @@ func NewNetClassCollector(logger log.Logger) (Collector, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to open sysfs: %w", err)
 	}
-	pattern := regexp.MustCompile(*netclassIgnoredDevices)
+	pattern := regexp.MustCompile(netclassIgnoredDevices)
 	return &netClassCollector{
 		fs:                    fs,
 		subsystem:             "network",

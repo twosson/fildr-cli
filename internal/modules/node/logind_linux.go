@@ -67,7 +67,7 @@ type logindSeatEntry struct {
 }
 
 func init() {
-	registerCollector("logind", NewLogindCollector)
+	//registerCollector("logind", NewLogindCollector)
 }
 
 // NewLogindCollector returns a new Collector exposing logind statistics.

@@ -25,7 +25,7 @@ type interruptsCollector struct {
 }
 
 func init() {
-	registerCollector("interrupts", NewInterruptsCollector)
+	//registerCollector("interrupts", NewInterruptsCollector)
 }
 
 // NewInterruptsCollector returns a new Collector exposing interrupts stats.

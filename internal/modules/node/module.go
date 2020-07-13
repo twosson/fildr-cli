@@ -38,10 +38,6 @@ func (c *NodeCollectorModule) Start() error {
 		instance = hostname
 	}
 
-	fmt.Println("url: %s", c.config.Gateway.Url)
-	fmt.Println("token: %s", c.config.Gateway.Token)
-	fmt.Println("instance: %s", instance)
-	fmt.Println("evaluation: %d", evaluation)
 	c.execute(c.config.Gateway.Url, c.config.Gateway.Token, "node", instance, time.Duration(evaluation))
 
 	return nil
@@ -63,9 +59,9 @@ func (c *NodeCollectorModule) execute(gateway string, token string, job string, 
 		for range time.Tick(time.Second * evaluation) {
 			metries, err := instance.GetMetrics()
 			if err != nil {
-				fmt.Println("instance get metrics err:", err)
+				//fmt.Println("instance get metrics err:", err)
 			}
-			fmt.Println("metries: %s", metries)
+			//fmt.Println("metries: %s", metries)
 			instance.PushMetrics(gateway, token, metries)
 		}
 	}()

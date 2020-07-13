@@ -8,12 +8,11 @@ import (
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs/sysfs"
-	"gopkg.in/alecthomas/kingpin.v2"
 	"regexp"
 )
 
 var (
-	netclassIgnoredDevices = kingpin.Flag("collector.netclass.ignored-devices", "Regexp of net devices to ignore for netclass collector.").Default("^$").String()
+	netclassIgnoredDevices = "^$"
 )
 
 type netClassCollector struct {

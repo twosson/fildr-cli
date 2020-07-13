@@ -22,7 +22,7 @@ type processCollector struct {
 }
 
 func init() {
-	registerCollector("processes", NewProcessStatCollector)
+	//registerCollector("processes", NewProcessStatCollector)
 }
 
 // NewProcessStatCollector returns a new Collector exposing process data read from the proc filesystem.

@@ -32,6 +32,7 @@ func main() {
 		WalletBalance    func(address address.Address) (types.BigInt, error)
 		StateNetworkName func() (dtypes.NetworkName, error)
 		ChainNotify      func() (<-chan []*api.HeadChange, error)
+		SyncState        func() (*api.SyncState, error)
 	}
 
 	requestHeader := http.Header{}

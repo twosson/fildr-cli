@@ -243,7 +243,7 @@ func NewPerfCollector(logger log.Logger) (Collector, error) {
 		cpus []int
 		err  error
 	)
-	if perfCPUsFlag != "" && perfCPUsFlag != "" {
+	if perfCPUsFlag != "" {
 		cpus, err = perfCPUFlagToCPUs(perfCPUsFlag)
 		if err != nil {
 			return nil, err

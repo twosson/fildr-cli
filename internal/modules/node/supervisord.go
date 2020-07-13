@@ -28,7 +28,7 @@ type supervisordCollector struct {
 }
 
 func init() {
-	registerCollector("supervisord", NewSupervisordCollector)
+	//registerCollector("supervisord", NewSupervisordCollector)
 }
 
 // NewSupervisordCollector returns a new Collector exposing supervisord statistics.

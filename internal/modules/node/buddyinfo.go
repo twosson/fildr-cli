@@ -22,7 +22,7 @@ type buddyinfoCollector struct {
 }
 
 func init() {
-	registerCollector("buddyinfo", NewBuddyinfoCollector)
+	//registerCollector("buddyinfo", NewBuddyinfoCollector)
 }
 
 // NewBuddyinfoCollector returns a new Collector exposing buddyinfo stats.

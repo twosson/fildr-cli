@@ -73,6 +73,7 @@ func (i *Instance) PushMetrics(gateway string, token string, data string) error 
 		return err
 	}
 	req.Header.Add("blade-auth", "Bearer "+token)
+	req.Header.Add("Content-Type", "text/plain")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

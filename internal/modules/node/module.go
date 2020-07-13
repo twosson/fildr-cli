@@ -3,8 +3,8 @@ package node
 import (
 	"context"
 	"fildr-cli/internal/config"
+	"fildr-cli/internal/log"
 	"fildr-cli/internal/module"
-	"fmt"
 	"os"
 	"time"
 )
@@ -38,7 +38,7 @@ func (c *NodeCollectorModule) Start() error {
 		instance = hostname
 	}
 
-	c.execute("node", instance, time.Duration(evaluation))
+	c.execute(c.config.Gateway.Url, "node", instance, time.Duration(evaluation))
 
 	return nil
 }
@@ -47,7 +47,7 @@ func (c *NodeCollectorModule) Stop() {
 
 }
 
-func (c *NodeCollectorModule) execute(job string, instanceName string, evaluation time.Duration) {
+func (c *NodeCollectorModule) execute(gateway string, job string, instanceName string, evaluation time.Duration) {
 	go func() {
 		instance, err := GetInstance()
 		if err != nil {
@@ -56,12 +56,11 @@ func (c *NodeCollectorModule) execute(job string, instanceName string, evaluatio
 		instance.SetJob(job)
 		instance.SetInstance(instanceName)
 		for range time.Tick(time.Second * evaluation) {
-			fmt.Println("print metrics ...")
 			metries, err := instance.GetMetrics()
 			if err != nil {
-				fmt.Println(err)
+				log.NopLogger().Named("collector-node").Errorf("instance get metrics err: ", err)
 			}
-			fmt.Println(metries)
+			instance.PushMetrics(gateway, metries)
 		}
 	}()
 }

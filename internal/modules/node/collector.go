@@ -59,7 +59,7 @@ func NewNodeCollector(logger log.Logger, filters ...string) (*NodeCollector, err
 		if enabled {
 			collector, err := factories[key](log.NopLogger().Named("collector-" + key))
 			if err != nil {
-				return nil, err
+				continue
 			}
 			collectors[key] = collector
 		}

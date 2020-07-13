@@ -37,7 +37,7 @@ type ntpCollector struct {
 }
 
 func init() {
-	registerCollector("ntp", NewNtpCollector)
+	//registerCollector("ntp", NewNtpCollector)
 }
 
 // NewNtpCollector returns a new Collector exposing sanity of local NTP server.

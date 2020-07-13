@@ -3,8 +3,8 @@ package node
 import (
 	"context"
 	"fildr-cli/internal/config"
-	"fildr-cli/internal/log"
 	"fildr-cli/internal/module"
+	"fmt"
 	"os"
 	"time"
 )
@@ -38,7 +38,10 @@ func (c *NodeCollectorModule) Start() error {
 		instance = hostname
 	}
 
-	log.NopLogger().Infof("Start Node Collector ", instance, evaluation, c.config.Gateway.Url, c.config.Gateway.Token)
+	fmt.Println("url: %s", c.config.Gateway.Url)
+	fmt.Println("token: %s", c.config.Gateway.Token)
+	fmt.Println("instance: %s", instance)
+	fmt.Println("evaluation: %d", evaluation)
 	c.execute(c.config.Gateway.Url, c.config.Gateway.Token, "node", instance, time.Duration(evaluation))
 
 	return nil
@@ -52,7 +55,7 @@ func (c *NodeCollectorModule) execute(gateway string, token string, job string, 
 	go func() {
 		instance, err := GetInstance()
 		if err != nil {
-			log.NopLogger().Errorf("create node instance err", err)
+			fmt.Println("get instance err : ", err)
 			return
 		}
 		instance.SetJob(job)
@@ -60,9 +63,9 @@ func (c *NodeCollectorModule) execute(gateway string, token string, job string, 
 		for range time.Tick(time.Second * evaluation) {
 			metries, err := instance.GetMetrics()
 			if err != nil {
-				log.NopLogger().Named("collector-node").Errorf("instance get metrics err: ", err)
+				fmt.Println("instance get metrics err:", err)
 			}
-			log.NopLogger().Infof("metries", metries)
+			fmt.Println("metries: %s", metries)
 			instance.PushMetrics(gateway, token, metries)
 		}
 	}()

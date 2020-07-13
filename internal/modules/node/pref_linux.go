@@ -19,7 +19,7 @@ const (
 
 var (
 	perfCPUsFlag       = ""
-	perfTracepointFlag = make([]string, 0)
+	perfTracepointFlag = []string{}
 )
 
 func init() {

@@ -37,7 +37,7 @@ var (
 )
 
 func init() {
-	registerCollector("wifi", NewWifiCollector)
+	//registerCollector("wifi", NewWifiCollector)
 }
 
 var _ wifiStater = &wifi.Client{}

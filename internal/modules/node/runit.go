@@ -19,7 +19,7 @@ type runitCollector struct {
 }
 
 func init() {
-	registerCollector("runit", NewRunitCollector)
+	//registerCollector("runit", NewRunitCollector)
 }
 
 // NewRunitCollector returns a new Collector exposing runit statistics.

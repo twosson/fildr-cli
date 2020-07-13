@@ -25,7 +25,7 @@ func newFildrCmd(version string, gitCommit string, buildTime string) *cobra.Comm
 			defer cancel()
 
 			if err := bindViper(cmd); err != nil {
-				golog.Println("unable to bind flags: %v", err)
+				golog.Println("unable to bind flags: ", err)
 			}
 
 			logLevel := 0
@@ -78,7 +78,7 @@ func newFildrCmd(version string, gitCommit string, buildTime string) *cobra.Comm
 
 				runner, err := runner2.NewRunner(ctx, logger, options)
 				if err != nil {
-					golog.Println("unable to start runner: %v", err)
+					golog.Println("unable to start runner: ", err)
 					os.Exit(1)
 				}
 

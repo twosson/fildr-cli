@@ -1,5 +1,5 @@
 // +build !nofilesystem
-// +build linux freebsd openbsd darwin,amd64 dragonfly
+// +build linux
 
 package node
 

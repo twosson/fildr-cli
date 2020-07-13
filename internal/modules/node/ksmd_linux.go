@@ -20,7 +20,7 @@ type ksmdCollector struct {
 }
 
 func init() {
-	registerCollector("ksmd", NewKsmdCollector)
+	//registerCollector("ksmd", NewKsmdCollector)
 }
 
 func getCanonicalMetricName(filename string) string {

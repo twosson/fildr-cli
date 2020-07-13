@@ -27,7 +27,7 @@ var (
 )
 
 func init() {
-	registerCollector("qdisc", NewQdiscStatCollector)
+	//registerCollector("qdisc", NewQdiscStatCollector)
 }
 
 // NewQdiscStatCollector returns a new Collector exposing queuing discipline statistics.

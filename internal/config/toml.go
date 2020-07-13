@@ -31,6 +31,7 @@ type TomlConfig struct {
 
 type gateway struct {
 	Url        string
+	Token      string
 	Instance   string
 	Evaluation int64
 }

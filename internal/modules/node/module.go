@@ -38,7 +38,7 @@ func (c *NodeCollectorModule) Start() error {
 		instance = hostname
 	}
 
-	c.execute(c.config.Gateway.Url, "node", instance, time.Duration(evaluation))
+	c.execute(c.config.Gateway.Url, c.config.Gateway.Token, "node", instance, time.Duration(evaluation))
 
 	return nil
 }
@@ -47,7 +47,7 @@ func (c *NodeCollectorModule) Stop() {
 
 }
 
-func (c *NodeCollectorModule) execute(gateway string, job string, instanceName string, evaluation time.Duration) {
+func (c *NodeCollectorModule) execute(gateway string, token string, job string, instanceName string, evaluation time.Duration) {
 	go func() {
 		instance, err := GetInstance()
 		if err != nil {
@@ -60,7 +60,7 @@ func (c *NodeCollectorModule) execute(gateway string, job string, instanceName s
 			if err != nil {
 				log.NopLogger().Named("collector-node").Errorf("instance get metrics err: ", err)
 			}
-			instance.PushMetrics(gateway, metries)
+			instance.PushMetrics(gateway, token, metries)
 		}
 	}()
 }

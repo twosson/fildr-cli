@@ -58,7 +58,7 @@ func (i *Instance) GetMetrics() (string, error) {
 	return buf.String(), nil
 }
 
-func (i *Instance) PushMetrics(gateway string, data string) error {
+func (i *Instance) PushMetrics(gateway string, token string, data string) error {
 	sr := strings.NewReader(data)
 	br := bufio.NewReader(sr)
 	var url string
@@ -72,6 +72,7 @@ func (i *Instance) PushMetrics(gateway string, data string) error {
 	if err != nil {
 		return err
 	}
+	req.Header.Add("blade-auth", "Bearer "+token)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

@@ -67,7 +67,7 @@ type drbdCollector struct {
 }
 
 func init() {
-	registerCollector("drbd", newDRBDCollector)
+	//registerCollector("drbd", newDRBDCollector)
 }
 
 func newDRBDCollector(logger log.Logger) (Collector, error) {

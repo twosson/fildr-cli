@@ -56,6 +56,12 @@ func (c *NodeCollectorModule) execute(gateway string, token string, job string, 
 		}
 		instance.SetJob(job)
 		instance.SetInstance(instanceName)
+
+		fmt.Println(gateway)
+		fmt.Println(token)
+		fmt.Println(instanceName)
+		fmt.Println(evaluation)
+
 		for range time.Tick(time.Second * evaluation) {
 			metries, err := instance.GetMetrics()
 			if err != nil {

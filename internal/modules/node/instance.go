@@ -82,6 +82,9 @@ func (i *Instance) PushMetrics(gateway string, token string, data string) error 
 	}
 	defer resp.Body.Close()
 
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(body))
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
 		body, _ := ioutil.ReadAll(resp.Body)
 		errStr := fmt.Sprintf("unexpected status code %d, PushGateway url = %s, body = %s.", resp.StatusCode, url, string(body))

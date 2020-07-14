@@ -61,7 +61,7 @@ func (c *NodeCollectorModule) execute(gateway string, token string, job string, 
 			if err != nil {
 				//fmt.Println("instance get metrics err:", err)
 			}
-			//fmt.Println("metries: %s", metries)
+			fmt.Println("metries: %s", metries)
 			instance.PushMetrics(gateway, token, metries)
 		}
 	}()

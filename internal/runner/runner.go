@@ -59,7 +59,7 @@ func (r *Runner) Start(ctx context.Context, startupCh, shutdownCh chan bool) {
 	}
 
 	go func() {
-		fmt.Println("test")
+
 	}()
 
 	<-ctx.Done()

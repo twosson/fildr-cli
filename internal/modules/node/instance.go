@@ -75,7 +75,6 @@ func (i *Instance) PushMetrics(gateway string, token string, data string) error 
 	req.Header.Add("blade-auth", "Bearer "+token)
 	req.Header.Add("Content-Type", "text/plain")
 
-	fmt.Println("test" + url)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -83,12 +82,8 @@ func (i *Instance) PushMetrics(gateway string, token string, data string) error 
 	}
 	defer resp.Body.Close()
 
-	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(resp.StatusCode)
-	fmt.Println(string(body))
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
-		body, _ = ioutil.ReadAll(resp.Body)
+		body, _ := ioutil.ReadAll(resp.Body)
 		errStr := fmt.Sprintf("unexpected status code %d, PushGateway url = %s, body = %s.", resp.StatusCode, url, string(body))
 		return errors.New(errStr)
 	}

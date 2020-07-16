@@ -101,6 +101,7 @@ func newFildrCmd(version, gitCommit, buildTime string) *cobra.Command {
 	fildrCmd.Flags().SortFlags = false
 
 	fildrCmd.Flags().StringP("context", "", "", "initial context ")
+	fildrCmd.Flags().BoolP("verbose", "v", false, "trun on debug logging")
 
 	return fildrCmd
 }

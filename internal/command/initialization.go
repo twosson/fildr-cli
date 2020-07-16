@@ -28,16 +28,10 @@ func newInitializationCmd(version string, gitCommit string, buildTime string) *c
 			path := user.HomeDir + "/.fildr"
 			var exists bool
 			_, err = os.Stat(path)
-			if err == nil {
-				exists = true
-			} else {
-				exists = false
-			}
-
-			if !exists {
+			if err != nil {
 				err = os.Mkdir(path, os.ModePerm)
 				if err != nil {
-					fmt.Fprintln(out, "Error creating folder: %s", err.Error())
+					fmt.Fprintf(out, "Error creating folder: %s", err.Error())
 					os.Exit(1)
 				}
 			}

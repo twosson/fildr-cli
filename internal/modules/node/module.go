@@ -5,21 +5,18 @@ import (
 	"fildr-cli/internal/config"
 	"fildr-cli/internal/log"
 	"fildr-cli/internal/module"
-	"fmt"
-	"os"
 	"time"
 )
 
 var _ module.Module = (*NodeCollectorModule)(nil)
 
 type NodeCollectorModule struct {
-	config *config.TomlConfig
 	logger log.Logger
 }
 
-func New(ctx context.Context, config *config.TomlConfig) (*NodeCollectorModule, error) {
+func New(ctx context.Context) (*NodeCollectorModule, error) {
 	logger := log.From(ctx)
-	return &NodeCollectorModule{config: config, logger: logger}, nil
+	return &NodeCollectorModule{logger: logger}, nil
 }
 
 func (c *NodeCollectorModule) Name() string {
@@ -27,53 +24,33 @@ func (c *NodeCollectorModule) Name() string {
 }
 
 func (c *NodeCollectorModule) Start() error {
-	c.logger.Infof("a module for node collector started.")
-	evaluation := c.config.Gateway.Evaluation
-	if evaluation == 0 {
-		evaluation = 5
-	}
+	c.logger.Infof("node collector starting ...")
 
-	instance := c.config.Gateway.Instance
-	if instance == "" {
-		hostname, err := os.Hostname()
-		if err != nil {
-			return err
+	gateway := config.Get().Gateway
+	instance, err := GetInstance(c.logger)
+	if err != nil {
+		return err
+	}
+	instance.SetInstance(gateway.Instance)
+	instance.SetJob("node")
+
+	go func() {
+		for range time.Tick(gateway.Evaluation) {
+			metric, err := instance.GetMetrics()
+			if err != nil {
+				c.logger.Warnf("get metrics err: %v", err)
+				continue
+			}
+
+			if err = instance.PushMetrics(gateway.Url, gateway.Token, metric); err != nil {
+				c.logger.Warnf("push metrics err: %v", err)
+			}
 		}
-		instance = hostname
-	}
-
-	c.logger.Infof("node collector push gateway url : %s", c.config.Gateway.Url)
-	c.logger.Infof("node collector evaluation time : %ds", evaluation)
-	c.logger.Infof("node collector job : %s", "node")
-	c.logger.Infof("node collector instance : %s", instance)
-	c.execute(c.config.Gateway.Url, c.config.Gateway.Token, "node", instance, time.Duration(evaluation))
+	}()
 
 	return nil
 }
 
 func (c *NodeCollectorModule) Stop() {
 
-}
-
-func (c *NodeCollectorModule) execute(gateway string, token string, job string, instanceName string, evaluation time.Duration) {
-	go func() {
-		instance, err := GetInstance(c.logger)
-		if err != nil {
-			fmt.Println("get instance err : ", err)
-			return
-		}
-		instance.SetJob(job)
-		instance.SetInstance(instanceName)
-
-		for range time.Tick(time.Second * evaluation) {
-			metries, err := instance.GetMetrics()
-			if err != nil {
-				c.logger.Errorf("instance get metrics err: %v", err.Error())
-			}
-			err = instance.PushMetrics(gateway, token, metries)
-			if err != nil {
-				c.logger.Errorf("push err: %v", err.Error())
-			}
-		}
-	}()
 }

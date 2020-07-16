@@ -26,18 +26,17 @@ func NewRunner(ctx context.Context, logger log.Logger, options Options) (*Runner
 		logger.With("initial-context", options.Context).Infof("Settiing initial context from user flags")
 	}
 
+	if err := config.LoadConfig(); err != nil {
+		return nil, err
+	}
+
 	moduleManager, err := initModuleManager(logger)
 	if err != nil {
 		return nil, fmt.Errorf("init module manager: %w", err)
 	}
 	r.moduleManager = moduleManager
 
-	config, err := config.Config()
-	if err != nil {
-		return nil, fmt.Errorf("init config : %w", err)
-	}
-
-	moduleList, err := initModules(ctx, config)
+	moduleList, err := initModules(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("initializing modules: %w", err)
 	}
@@ -78,10 +77,10 @@ func initModuleManager(logger log.Logger) (*module.Manager, error) {
 	return moduleManager, nil
 }
 
-func initModules(ctx context.Context, config *config.TomlConfig) ([]module.Module, error) {
+func initModules(ctx context.Context) ([]module.Module, error) {
 	var list []module.Module
 
-	nodeCollector, err := node.New(ctx, config)
+	nodeCollector, err := node.New(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("initialize node collector module: %w", err)
 	}

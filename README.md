@@ -13,9 +13,30 @@ FILdr Client 可用独立运行，后端服务器(可选)可自行开发以及�
 - 安全审计
 - 自动化质押扇区
 
-## 安装
+## 安装使用
 
-暂无
+```
+git clone https://github.com/twosson/fildr-cli.git
+cd fildr-cli
+go run build.go build
+
+# 可执行二进制文件生成在./build/目录下，可拷贝到任意位置运行
+cd build
+# 初始化应用程序，会在用户HOME目录生成 .fildr/config.toml 配置文件
+./fildr-cli init
+
+cat ~/.fildr/config.toml
+
+[gateway]
+url = "https://api.fildr.com/fildr-miner"
+token = ""
+instance = ""
+evaluation = 5
+```
+
+> instance: 留空的话，会自动使用主机的hostname.
+> token: 是身份验证授权，请在管理后台获取.
+> evaluation: 指标评估间隔时间，单位为秒
 
 ## 开发
 
@@ -24,29 +45,23 @@ FILdr Client 可用独立运行，后端服务器(可选)可自行开发以及�
 ```
 ❯ tree -d
 .
-├── build
-├── cmd
+├── build # 编译后的二进制文件目录
+├── cmd # 程序运行入口
 │   └── fildr
-├── docs
-├── examples
-│   └── config
-├── internal
-│   ├── command
-│   ├── config
-│   ├── log
-│   ├── module
-│   ├── modules
-│   │   └── collector
-│   │       └── metric
-│   │           ├── lotus
-│   │           │   ├── daemon
-│   │           │   ├── miner
-│   │           │   └── worker
-│   │           └── node
-│   ├── pkg
-│   │   └── collector
-│   └── runner
-└── pkg 
+├── docs # 文档
+├── examples # 样例
+│   ├── config 
+│   └── metries
+├── internal # 程序主要目录
+│   ├── command # 命令及自命令入口
+│   ├── config # 配置文件
+│   ├── log # 日志组件
+│   ├── module # 模块管理
+│   ├── modules # 模块
+│   │   ├── lotus # lotus 相关应用
+│   │   └── node # 主机指标收集
+│   └── runner # 运行辅助
+└── pkg # 公共包，可被外部依赖
 ```
 
 ## 讨论

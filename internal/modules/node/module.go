@@ -3,6 +3,7 @@ package node
 import (
 	"context"
 	"fildr-cli/internal/config"
+	"fildr-cli/internal/log"
 	"fildr-cli/internal/module"
 	"fmt"
 	"os"
@@ -13,10 +14,12 @@ var _ module.Module = (*NodeCollectorModule)(nil)
 
 type NodeCollectorModule struct {
 	config *config.TomlConfig
+	logger log.Logger
 }
 
 func New(ctx context.Context, config *config.TomlConfig) (*NodeCollectorModule, error) {
-	return &NodeCollectorModule{config: config}, nil
+	logger := log.From(ctx)
+	return &NodeCollectorModule{config: config, logger: logger}, nil
 }
 
 func (c *NodeCollectorModule) Name() string {
@@ -24,6 +27,7 @@ func (c *NodeCollectorModule) Name() string {
 }
 
 func (c *NodeCollectorModule) Start() error {
+	c.logger.Infof("a module for node collector started.")
 	evaluation := c.config.Gateway.Evaluation
 	if evaluation == 0 {
 		evaluation = 5
@@ -38,6 +42,10 @@ func (c *NodeCollectorModule) Start() error {
 		instance = hostname
 	}
 
+	c.logger.Infof("node collector push gateway url : %s", c.config.Gateway.Url)
+	c.logger.Infof("node collector evaluation time : %ds", evaluation)
+	c.logger.Infof("node collector job : %s", "node")
+	c.logger.Infof("node collector instance : %s", instance)
 	c.execute(c.config.Gateway.Url, c.config.Gateway.Token, "node", instance, time.Duration(evaluation))
 
 	return nil
@@ -60,9 +68,8 @@ func (c *NodeCollectorModule) execute(gateway string, token string, job string, 
 		for range time.Tick(time.Second * evaluation) {
 			metries, err := instance.GetMetrics()
 			if err != nil {
-				//fmt.Println("instance get metrics err:", err)
+				c.logger.Errorf("instance get metrics err: %v", err.Error())
 			}
-			//fmt.Println("metries: %s", metries)
 			instance.PushMetrics(gateway, token, metries)
 		}
 	}()

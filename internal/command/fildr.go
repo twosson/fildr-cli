@@ -50,7 +50,7 @@ func newFildrCmd(version string, gitCommit string, buildTime string) *cobra.Comm
 			runCh := make(chan bool, 1)
 			shutdownCh := make(chan bool, 1)
 
-			logger.Infof("fildr start ...")
+			logger.Infof("fildr-cli started.")
 
 			go func() {
 

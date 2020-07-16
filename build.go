@@ -175,7 +175,7 @@ func build() {
 
 	artifact := "fildr-cli"
 	if runtime.GOOS == "windows" {
-		artifact = "octant.exe"
+		artifact = "fildr-cli.exe"
 	}
 	runCmd("go", nil, "build", "-o", "build/"+artifact, GO_FLAGS, "-v", "./cmd/fildr")
 }

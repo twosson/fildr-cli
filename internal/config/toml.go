@@ -25,17 +25,17 @@ func Config() (*TomlConfig, error) {
 }
 
 type TomlConfig struct {
-	Gateway    gateway
-	Collectors map[string]collector
+	Gateway    Gateway
+	Collectors map[string]Collector
 }
 
-type gateway struct {
+type Gateway struct {
 	Url        string
 	Token      string
 	Instance   string
 	Evaluation int64
 }
 
-type collector struct {
+type Collector struct {
 	Metric []string
 }

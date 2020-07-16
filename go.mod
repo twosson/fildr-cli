@@ -15,6 +15,7 @@ require (
 	github.com/ipfs/go-log/v2 v2.1.2-0.20200626104915-0016c0b4b3e4
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/mdlayher/wifi v0.0.0-20190303161829-b1436901ddee
+	github.com/pelletier/go-toml v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.7.1
 	github.com/prometheus/client_model v0.2.0

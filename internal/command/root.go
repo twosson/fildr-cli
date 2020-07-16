@@ -20,5 +20,6 @@ func Execute(version string, gitCommit string, buildTime string) {
 func newRoot(version string, gitCommit string, buildTime string) *cobra.Command {
 	rootCmd := newFildrCmd(version, gitCommit, buildTime)
 	rootCmd.AddCommand(newVersionCmd(version, gitCommit, buildTime))
+	rootCmd.AddCommand(newInitializationCmd(version, gitCommit, buildTime))
 	return rootCmd
 }

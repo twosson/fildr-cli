@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newVersionCmd(version string, gitCommit string, buildTime string) *cobra.Command {
+func newVersionCmd(version, gitCommit, buildTime string) *cobra.Command {
 
 	versionCmd := &cobra.Command{
 		Use:   "version",

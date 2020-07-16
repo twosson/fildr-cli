@@ -58,10 +58,6 @@ func (r *Runner) Start(ctx context.Context, startupCh, shutdownCh chan bool) {
 		startupCh <- true
 	}
 
-	go func() {
-
-	}()
-
 	<-ctx.Done()
 
 	shutdownCtx := log.WithLoggerContext(context.Background(), logger)

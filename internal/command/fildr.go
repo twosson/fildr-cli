@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-func newFildrCmd(version string, gitCommit string, buildTime string) *cobra.Command {
+func newFildrCmd(version, gitCommit, buildTime string) *cobra.Command {
 	fildrCmd := &cobra.Command{
 		Use:   "fildr",
 		Short: "ops client",

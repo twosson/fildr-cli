@@ -16,7 +16,7 @@ instance = ""
 evaluation = 5
 `
 
-func newInitializationCmd(version string, gitCommit string, buildTime string) *cobra.Command {
+func newInitializationCmd(version, gitCommit, buildTime string) *cobra.Command {
 
 	initializationCmd := &cobra.Command{
 		Use:   "init",
@@ -26,18 +26,11 @@ func newInitializationCmd(version string, gitCommit string, buildTime string) *c
 			out := cmd.OutOrStdout()
 			user, err := user.Current()
 			path := user.HomeDir + "/.fildr"
-			var exists bool
 			_, err = os.Stat(path)
-			if err == nil {
-				exists = true
-			} else {
-				exists = false
-			}
-
-			if !exists {
+			if err != nil {
 				err = os.Mkdir(path, os.ModePerm)
 				if err != nil {
-					fmt.Fprintln(out, "Error creating folder: %s", err.Error())
+					fmt.Fprintf(out, "Error creating folder: %s", err.Error())
 					os.Exit(1)
 				}
 			}

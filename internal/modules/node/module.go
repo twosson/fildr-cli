@@ -57,7 +57,7 @@ func (c *NodeCollectorModule) Stop() {
 
 func (c *NodeCollectorModule) execute(gateway string, token string, job string, instanceName string, evaluation time.Duration) {
 	go func() {
-		instance, err := GetInstance()
+		instance, err := GetInstance(c.logger)
 		if err != nil {
 			fmt.Println("get instance err : ", err)
 			return
@@ -70,7 +70,10 @@ func (c *NodeCollectorModule) execute(gateway string, token string, job string, 
 			if err != nil {
 				c.logger.Errorf("instance get metrics err: %v", err.Error())
 			}
-			instance.PushMetrics(gateway, token, metries)
+			err = instance.PushMetrics(gateway, token, metries)
+			if err != nil {
+				c.logger.Errorf("push err: %v", err.Error())
+			}
 		}
 	}()
 }

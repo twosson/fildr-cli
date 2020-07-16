@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type Instance struct {
@@ -19,10 +20,11 @@ type Instance struct {
 
 	job      string
 	instance string
+	logger   log.Logger
 }
 
-func GetInstance() (*Instance, error) {
-	node, err := NewNodeCollector(log.NopLogger().Named("node-collector"))
+func GetInstance(logger log.Logger) (*Instance, error) {
+	node, err := NewNodeCollector(logger)
 	if err != nil {
 		return nil, err
 	}
@@ -31,6 +33,7 @@ func GetInstance() (*Instance, error) {
 		C:        node,
 		job:      "defaultJobName",
 		instance: "defaultInstanceName",
+		logger:   logger,
 	}
 	if instance.R == nil || instance.C == nil || instance.R.Register(instance.C) != nil {
 		return nil, err
@@ -75,14 +78,14 @@ func (i *Instance) PushMetrics(gateway string, token string, data string) error 
 	req.Header.Add("blade-auth", "Bearer "+token)
 	req.Header.Add("Content-Type", "text/plain")
 
-	client := &http.Client{}
+	client := &http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
+	if resp.StatusCode != http.StatusOK {
 		body, _ := ioutil.ReadAll(resp.Body)
 		errStr := fmt.Sprintf("unexpected status code %d, PushGateway url = %s, body = %s.", resp.StatusCode, url, string(body))
 		return errors.New(errStr)

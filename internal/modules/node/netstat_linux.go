@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io"
@@ -34,7 +35,7 @@ func init() {
 
 // NewNetStatCollector takes and returns
 // a new Collector exposing network stats.
-func NewNetStatCollector(logger log.Logger) (Collector, error) {
+func NewNetStatCollector(logger log.Logger) (pusher.Collector, error) {
 	pattern := regexp.MustCompile(netStatFields)
 	return &netStatCollector{
 		fieldPattern: pattern,

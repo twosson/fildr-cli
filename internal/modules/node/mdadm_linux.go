@@ -5,6 +5,7 @@ package node
 import (
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"
@@ -20,7 +21,7 @@ func init() {
 }
 
 // NewMdadmCollector returns a new Collector exposing raid statistics.
-func NewMdadmCollector(logger log.Logger) (Collector, error) {
+func NewMdadmCollector(logger log.Logger) (pusher.Collector, error) {
 	return &mdadmCollector{logger}, nil
 }
 
@@ -91,7 +92,7 @@ func (c *mdadmCollector) Update(ch chan<- prometheus.Metric) error {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			c.logger.Debugf("msg", "Not collecting mdstat, file does not exist", "file", procPath)
-			return ErrNoData
+			return pusher.ErrNoData
 		}
 
 		return fmt.Errorf("error parsing mdstatus: %w", err)

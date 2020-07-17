@@ -2,7 +2,6 @@ package lotus
 
 import (
 	"context"
-	"fildr-cli/internal/config"
 	"fildr-cli/internal/log"
 	"fildr-cli/internal/module"
 )
@@ -10,14 +9,12 @@ import (
 var _ module.Module = (*LotusCollectorModule)(nil)
 
 type LotusCollectorModule struct {
-	roles  []string
-	config *config.TomlConfig
 	logger log.Logger
 }
 
-func New(ctx context.Context, config *config.TomlConfig) (*LotusCollectorModule, error) {
+func New(ctx context.Context) (*LotusCollectorModule, error) {
 	logger := log.From(ctx)
-	return &LotusCollectorModule{config: config, logger: logger}, nil
+	return &LotusCollectorModule{logger: logger}, nil
 }
 
 func (l *LotusCollectorModule) Name() string {

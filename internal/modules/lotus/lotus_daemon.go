@@ -16,66 +16,26 @@ import (
 	"time"
 )
 
-const (
-	DefaultDataPath          = "${HOME}/.lotus"
-	DefaultApiListenAddr     = "/ip4/0.0.0.0/tcp/1234"
-	DefaultChainWalkThrottle = "1s"
-)
+type lotusDaemon struct {
+	dataPath      string
+	apiListenAddr string
+	apiToken      string
 
-type lotus struct {
-	DataPath          string `toml:"lotus_datapath"`
-	ApiListenAddr     string `toml:"lotus_api_listen_addr"`
-	ApiToken          string `toml:"lotus_api_token"`
-	ChainWalkThrottle string `toml:"chain_walk_throttle"`
-
-	api               api.FullNode
-	chainWalkThrottle time.Duration
-	shutdown          func()
+	api api.FullNode
 }
 
-func newLotus() *lotus {
-	return &lotus{}
+func newLotusDaemon() *lotusDaemon {
+	return &lotusDaemon{}
 }
 
-func (l *lotus) setDefaults() {
-	if len(l.DataPath) == 0 {
-		l.DataPath = DefaultDataPath
-	}
-	if len(l.ApiListenAddr) == 0 {
-		l.ApiListenAddr = DefaultApiListenAddr
-	}
-	if len(l.ChainWalkThrottle) == 0 {
-		l.ChainWalkThrottle = DefaultChainWalkThrottle
-	}
-}
-
-func (l *lotus) Description() string {
-	return `Capture network metrics from Filecoin Lotus`
-}
-
-var sampleConfig = fmt.Sprintf(`
-	# lotus_api_listen_addr = "%[1]s"
-	# lotus_api_token = ""
-	lotus_datapath = "%[2]s"
-	chain_walk_throttle = "%[3]s"
-`, DefaultDataPath, DefaultApiListenAddr, DefaultChainWalkThrottle)
-
-func (l *lotus) SampleConfig() string {
-	return sampleConfig
-}
-
-func (l *lotus) Gather(acc telegraf.Accumulator) error {
-	return nil
-}
-
-func (l *lotus) getApiUsingLotusConfig() (api.FullNode, func(), error) {
+func (l *lotusDaemon) getApiUsingLotusConfig() (api.FullNode, func(), error) {
 	var (
 		nodeApi    api.FullNode
 		nodeCloser func()
 	)
 
-	if len(l.ApiListenAddr) > 0 && len(l.ApiToken) > 0 {
-		api, apiCloser, err := rpc.GetFullNodeApiUsingCredentials(l.ApiListenAddr, l.ApiToken)
+	if len(l.apiListenAddr) > 0 && len(l.apiToken) > 0 {
+		api, apiCloser, err := rpc.GetFullNodeApiUsingCredentials(l.apiListenAddr, l.apiToken)
 		if err != nil {
 			err = fmt.Errorf("connect  with credentials: %v", err)
 			return nil, nil, err
@@ -84,7 +44,7 @@ func (l *lotus) getApiUsingLotusConfig() (api.FullNode, func(), error) {
 		nodeApi = api
 		nodeCloser = apiCloser
 	} else {
-		api, apiCloser, err := rpc.GetFullNodeApi(l.DataPath)
+		api, apiCloser, err := rpc.GetFullNodeApi(l.dataPath)
 		if err != nil {
 			err = fmt.Errorf("connect from lotus state: %v", err)
 			return nil, nil, err
@@ -95,7 +55,7 @@ func (l *lotus) getApiUsingLotusConfig() (api.FullNode, func(), error) {
 	return nodeApi, nodeCloser, nil
 }
 
-func (l *lotus) Start() error {
+func (l *lotusDaemon) Start() error {
 	l.setDefaults()
 
 	throttleDuration, err := time.ParseDuration(l.ChainWalkThrottle)

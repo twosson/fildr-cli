@@ -6,6 +6,7 @@ package node
 import (
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs/sysfs"
@@ -29,7 +30,7 @@ func init() {
 	registerCollector("powersupplyclass", NewPowerSupplyClassCollector)
 }
 
-func NewPowerSupplyClassCollector(logger log.Logger) (Collector, error) {
+func NewPowerSupplyClassCollector(logger log.Logger) (pusher.Collector, error) {
 	pattern := regexp.MustCompile(*powerSupplyClassIgnoredPowerSupplies)
 	return &powerSupplyClassCollector{
 		subsystem:      "power_supply",
@@ -43,7 +44,7 @@ func (c *powerSupplyClassCollector) Update(ch chan<- prometheus.Metric) error {
 	powerSupplyClass, err := getPowerSupplyClassInfo(c.ignoredPattern)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			return ErrNoData
+			return pusher.ErrNoData
 		}
 		return fmt.Errorf("could not get power_supply class info: %w", err)
 	}

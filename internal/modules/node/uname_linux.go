@@ -6,6 +6,7 @@ package node
 import (
 	"bytes"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/sys/unix"
 )
@@ -41,7 +42,7 @@ func init() {
 }
 
 // NewUnameCollector returns new unameCollector.
-func newUnameCollector(logger log.Logger) (Collector, error) {
+func newUnameCollector(logger log.Logger) (pusher.Collector, error) {
 	return &unameCollector{logger}, nil
 }
 

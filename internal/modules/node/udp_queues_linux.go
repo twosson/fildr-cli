@@ -5,6 +5,7 @@ package node
 import (
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"
@@ -24,7 +25,7 @@ func init() {
 }
 
 // NewUDPqueuesCollector returns a new Collector exposing network udp queued bytes.
-func NewUDPqueuesCollector(logger log.Logger) (Collector, error) {
+func NewUDPqueuesCollector(logger log.Logger) (pusher.Collector, error) {
 	fs, err := procfs.NewFS(procPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open procfs: %w", err)
@@ -67,7 +68,7 @@ func (c *udpQueuesCollector) Update(ch chan<- prometheus.Metric) error {
 	}
 
 	if errors.Is(errIPv4, os.ErrNotExist) && errors.Is(errIPv6, os.ErrNotExist) {
-		return ErrNoData
+		return pusher.ErrNoData
 	}
 	return nil
 }

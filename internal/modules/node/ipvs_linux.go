@@ -5,6 +5,7 @@ package node
 import (
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"
@@ -16,11 +17,11 @@ import (
 )
 
 type ipvsCollector struct {
-	Collector
+	pusher.Collector
 	fs                                                                          procfs.FS
 	backendLabels                                                               []string
-	backendConnectionsActive, backendConnectionsInact, backendWeight            typedDesc
-	connections, incomingPackets, outgoingPackets, incomingBytes, outgoingBytes typedDesc
+	backendConnectionsActive, backendConnectionsInact, backendWeight            pusher.TypedDesc
+	connections, incomingPackets, outgoingPackets, incomingBytes, outgoingBytes pusher.TypedDesc
 	logger                                                                      log.Logger
 }
 
@@ -57,7 +58,7 @@ func init() {
 
 // NewIPVSCollector sets up a new collector for IPVS metrics. It accepts the
 // "procfs" config parameter to override the default proc location (/proc).
-func NewIPVSCollector(logger log.Logger) (Collector, error) {
+func NewIPVSCollector(logger log.Logger) (pusher.Collector, error) {
 	return newIPVSCollector(logger)
 }
 
@@ -78,42 +79,42 @@ func newIPVSCollector(logger log.Logger) (*ipvsCollector, error) {
 		return nil, fmt.Errorf("failed to open procfs: %w", err)
 	}
 
-	c.connections = typedDesc{prometheus.NewDesc(
+	c.connections = pusher.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "connections_total"),
 		"The total number of connections made.",
 		nil, nil,
 	), prometheus.CounterValue}
-	c.incomingPackets = typedDesc{prometheus.NewDesc(
+	c.incomingPackets = pusher.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "incoming_packets_total"),
 		"The total number of incoming packets.",
 		nil, nil,
 	), prometheus.CounterValue}
-	c.outgoingPackets = typedDesc{prometheus.NewDesc(
+	c.outgoingPackets = pusher.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "outgoing_packets_total"),
 		"The total number of outgoing packets.",
 		nil, nil,
 	), prometheus.CounterValue}
-	c.incomingBytes = typedDesc{prometheus.NewDesc(
+	c.incomingBytes = pusher.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "incoming_bytes_total"),
 		"The total amount of incoming data.",
 		nil, nil,
 	), prometheus.CounterValue}
-	c.outgoingBytes = typedDesc{prometheus.NewDesc(
+	c.outgoingBytes = pusher.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "outgoing_bytes_total"),
 		"The total amount of outgoing data.",
 		nil, nil,
 	), prometheus.CounterValue}
-	c.backendConnectionsActive = typedDesc{prometheus.NewDesc(
+	c.backendConnectionsActive = pusher.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "backend_connections_active"),
 		"The current active connections by local and remote address.",
 		c.backendLabels, nil,
 	), prometheus.GaugeValue}
-	c.backendConnectionsInact = typedDesc{prometheus.NewDesc(
+	c.backendConnectionsInact = pusher.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "backend_connections_inactive"),
 		"The current inactive connections by local and remote address.",
 		c.backendLabels, nil,
 	), prometheus.GaugeValue}
-	c.backendWeight = typedDesc{prometheus.NewDesc(
+	c.backendWeight = pusher.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "backend_weight"),
 		"The current backend weight by local and remote address.",
 		c.backendLabels, nil,
@@ -128,15 +129,15 @@ func (c *ipvsCollector) Update(ch chan<- prometheus.Metric) error {
 		// Cannot access ipvs metrics, report no error.
 		if errors.Is(err, os.ErrNotExist) {
 			c.logger.Debugf("msg", "ipvs collector metrics are not available for this system")
-			return ErrNoData
+			return pusher.ErrNoData
 		}
 		return fmt.Errorf("could not get IPVS stats: %w", err)
 	}
-	ch <- c.connections.mustNewConstMetric(float64(ipvsStats.Connections))
-	ch <- c.incomingPackets.mustNewConstMetric(float64(ipvsStats.IncomingPackets))
-	ch <- c.outgoingPackets.mustNewConstMetric(float64(ipvsStats.OutgoingPackets))
-	ch <- c.incomingBytes.mustNewConstMetric(float64(ipvsStats.IncomingBytes))
-	ch <- c.outgoingBytes.mustNewConstMetric(float64(ipvsStats.OutgoingBytes))
+	ch <- c.connections.MustNewConstMetric(float64(ipvsStats.Connections))
+	ch <- c.incomingPackets.MustNewConstMetric(float64(ipvsStats.IncomingPackets))
+	ch <- c.outgoingPackets.MustNewConstMetric(float64(ipvsStats.OutgoingPackets))
+	ch <- c.incomingBytes.MustNewConstMetric(float64(ipvsStats.IncomingBytes))
+	ch <- c.outgoingBytes.MustNewConstMetric(float64(ipvsStats.OutgoingBytes))
 
 	backendStats, err := c.fs.IPVSBackendStatus()
 	if err != nil {
@@ -179,9 +180,9 @@ func (c *ipvsCollector) Update(ch chan<- prometheus.Metric) error {
 	}
 	for key, status := range sums {
 		kv := labelValues[key]
-		ch <- c.backendConnectionsActive.mustNewConstMetric(float64(status.ActiveConn), kv...)
-		ch <- c.backendConnectionsInact.mustNewConstMetric(float64(status.InactConn), kv...)
-		ch <- c.backendWeight.mustNewConstMetric(float64(status.Weight), kv...)
+		ch <- c.backendConnectionsActive.MustNewConstMetric(float64(status.ActiveConn), kv...)
+		ch <- c.backendConnectionsInact.MustNewConstMetric(float64(status.InactConn), kv...)
+		ch <- c.backendWeight.MustNewConstMetric(float64(status.Weight), kv...)
 	}
 	return nil
 }

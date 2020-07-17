@@ -4,6 +4,7 @@ package node
 
 import (
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"path/filepath"
@@ -35,7 +36,7 @@ func getCanonicalMetricName(filename string) string {
 }
 
 // NewKsmdCollector returns a new Collector exposing kernel/system statistics.
-func NewKsmdCollector(logger log.Logger) (Collector, error) {
+func NewKsmdCollector(logger log.Logger) (pusher.Collector, error) {
 	subsystem := "ksmd"
 	descs := make(map[string]*prometheus.Desc)
 

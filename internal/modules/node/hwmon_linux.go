@@ -5,6 +5,7 @@ package node
 import (
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/sys/unix"
 	"io/ioutil"
@@ -37,7 +38,7 @@ type hwMonCollector struct {
 
 // NewHwMonCollector returns a new Collector exposing /sys/class/hwmon stats
 // (similar to lm-sensors).
-func NewHwMonCollector(logger log.Logger) (Collector, error) {
+func NewHwMonCollector(logger log.Logger) (pusher.Collector, error) {
 	return &hwMonCollector{logger}, nil
 }
 
@@ -411,7 +412,7 @@ func (c *hwMonCollector) Update(ch chan<- prometheus.Metric) error {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			c.logger.Debugf("msg", "hwmon collector metrics are not available for this system")
-			return ErrNoData
+			return pusher.ErrNoData
 		}
 
 		return err

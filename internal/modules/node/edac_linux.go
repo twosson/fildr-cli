@@ -4,6 +4,7 @@ package node
 
 import (
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"path/filepath"
@@ -32,7 +33,7 @@ func init() {
 }
 
 // NewEdacCollector returns a new Collector exposing edac stats.
-func NewEdacCollector(logger log.Logger) (Collector, error) {
+func NewEdacCollector(logger log.Logger) (pusher.Collector, error) {
 	return &edacCollector{
 		ceCount: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, edacSubsystem, "correctable_errors_total"),

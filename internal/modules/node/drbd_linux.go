@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"os"
@@ -70,7 +71,7 @@ func init() {
 	//registerCollector("drbd", newDRBDCollector)
 }
 
-func newDRBDCollector(logger log.Logger) (Collector, error) {
+func newDRBDCollector(logger log.Logger) (pusher.Collector, error) {
 	return &drbdCollector{
 		numerical: map[string]drbdNumericalMetric{
 			"ns": newDRBDNumericalMetric(
@@ -176,7 +177,7 @@ func (c *drbdCollector) Update(ch chan<- prometheus.Metric) error {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			c.logger.Debugf("msg", "stats file does not exist, skipping", "file", statsFile, "err", err)
-			return ErrNoData
+			return pusher.ErrNoData
 		}
 
 		return err

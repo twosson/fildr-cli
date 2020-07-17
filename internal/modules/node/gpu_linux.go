@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/csv"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"os/exec"
@@ -33,7 +34,7 @@ func init() {
 	registerCollector("gpu", NewNvidiaCollector)
 }
 
-func NewNvidiaCollector(logger log.Logger) (Collector, error) {
+func NewNvidiaCollector(logger log.Logger) (pusher.Collector, error) {
 	namespace := "nvidia"
 	nc := &nvidiaCollector{
 		numDevices: prometheus.NewDesc(

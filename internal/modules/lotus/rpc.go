@@ -6,6 +6,7 @@ import (
 	"github.com/filecoin-project/lotus/api"
 	"github.com/libp2p/go-libp2p-core/peer"
 	"net/http"
+	"strconv"
 )
 
 type Client struct {
@@ -20,5 +21,5 @@ func InitClient(client *Client) (jsonrpc.ClientCloser, error) {
 	requestHeader.Add("Content-Type", "application/json")
 	ip := cfg.Lotus.Daemon.Ip
 	port := cfg.Lotus.Daemon.Port
-	return jsonrpc.NewClient("ws://"+ip+":"+string(port)+"/rpc/v0", "Filecoin", client, requestHeader)
+	return jsonrpc.NewClient("ws://"+ip+":"+strconv.Itoa(port)+"/rpc/v0", "Filecoin", client, requestHeader)
 }

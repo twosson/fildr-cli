@@ -31,10 +31,10 @@ func newInitializationCmd() *cobra.Command {
 	}
 
 	initializationCmd.Flags().SortFlags = false
-	initializationCmd.Flags().StringP("token", "", "", "config gateway token")
-	initializationCmd.Flags().StringP("instance", "", "", "config gateway instance")
-	initializationCmd.Flags().DurationP("evaluation", "", time.Second*5, "config gateway evaluation")
-	initializationCmd.Flags().StringP("url", "", "https://api.fildr.com/fildr-miner", "config gateway url")
+	initializationCmd.Flags().StringP("gateway.token", "", "", "config gateway token")
+	initializationCmd.Flags().StringP("gateway.instance", "", "", "config gateway instance")
+	initializationCmd.Flags().DurationP("gateway.evaluation", "", time.Second*5, "config gateway evaluation")
+	initializationCmd.Flags().StringP("gateway.url", "", "https://api.fildr.com/fildr-miner", "config gateway url")
 
 	return initializationCmd
 }

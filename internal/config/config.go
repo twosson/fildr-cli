@@ -50,10 +50,10 @@ func InitializationConfig() error {
 	viper.SetConfigType("toml")
 	viper.SetConfigFile(path + `/config.toml`)
 
-	viper.Set("gateway.url", viper.GetString("url"))
-	viper.Set("gateway.token", viper.GetString("token"))
-	viper.Set("gateway.instance", viper.GetString("instance"))
-	viper.Set("gateway.evaluation", viper.GetDuration("evaluation"))
+	viper.Set("gateway.url", viper.GetString("gateway.url"))
+	viper.Set("gateway.token", viper.GetString("gateway.token"))
+	viper.Set("gateway.instance", viper.GetString("gateway.instance"))
+	viper.Set("gateway.evaluation", viper.GetDuration("gateway.evaluation"))
 
 	viper.Set("lotus.daemon.enable", false)
 	viper.Set("lotus.daemon.ip", "127.0.0.1")

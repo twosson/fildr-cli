@@ -76,7 +76,9 @@ func (lc *lotusDaemonCollector) Update(ch chan<- prometheus.Metric) error {
 
 	scm := make(map[string]float64)
 	for i := range ps {
-		scm[sc[i].ID.String()] = sc[i].Score
+		if i < len(sc) {
+			scm[sc[i].ID.String()] = sc[i].Score
+		}
 	}
 
 	if len(ps) > 0 && len(sc) > 0 {

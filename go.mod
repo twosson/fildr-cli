@@ -14,6 +14,7 @@ require (
 	github.com/godbus/dbus v0.0.0-20190402143921-271e53dc4968
 	github.com/hodgesds/perf-utils v0.0.8
 	github.com/ipfs/go-log/v2 v2.1.2-0.20200626104915-0016c0b4b3e4
+	github.com/libp2p/go-libp2p-core v0.6.0
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/mdlayher/wifi v0.0.0-20190303161829-b1436901ddee
 	github.com/multiformats/go-multiaddr v0.2.2

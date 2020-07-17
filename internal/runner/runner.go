@@ -5,6 +5,7 @@ import (
 	"fildr-cli/internal/config"
 	"fildr-cli/internal/log"
 	"fildr-cli/internal/module"
+	"fildr-cli/internal/modules/lotus"
 	"fildr-cli/internal/modules/node"
 	"fmt"
 )
@@ -82,10 +83,16 @@ func initModules(ctx context.Context) ([]module.Module, error) {
 
 	nodeCollector, err := node.New(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("initialize node collector module: %w", err)
+		return nil, fmt.Errorf("initialize node collector module: %v", err)
+	}
+
+	lotusCollector, err := lotus.New(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("initialize lotus collector module: %v", err)
 	}
 
 	list = append(list, nodeCollector)
+	list = append(list, lotusCollector)
 
 	return list, nil
 }

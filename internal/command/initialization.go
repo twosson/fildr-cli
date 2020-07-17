@@ -4,7 +4,9 @@ import (
 	"fildr-cli/internal/config"
 	"fmt"
 	"github.com/spf13/cobra"
+	golog "log"
 	"os"
+	"time"
 )
 
 func newInitializationCmd() *cobra.Command {
@@ -15,6 +17,11 @@ func newInitializationCmd() *cobra.Command {
 		Long:  "Initialization config",
 		Run: func(cmd *cobra.Command, args []string) {
 			out := cmd.OutOrStdout()
+
+			if err := bindViper(cmd); err != nil {
+				golog.Println("unable to bind flags: ", err)
+			}
+
 			if err := config.InitializationConfig(); err != nil {
 				fmt.Fprintln(out, "initialization config err: ", err)
 				os.Exit(1)
@@ -22,5 +29,12 @@ func newInitializationCmd() *cobra.Command {
 			fmt.Fprintln(out, "initialization complete.")
 		},
 	}
+
+	initializationCmd.Flags().SortFlags = false
+	initializationCmd.Flags().StringP("token", "", "", "config gateway token")
+	initializationCmd.Flags().StringP("instance", "", "", "config gateway instance")
+	initializationCmd.Flags().DurationP("evaluation", "", time.Second*5, "config gateway evaluation")
+	initializationCmd.Flags().StringP("url", "", "https://api.fildr.com/fildr-miner", "config gateway url")
+
 	return initializationCmd
 }

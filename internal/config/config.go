@@ -50,10 +50,10 @@ func InitializationConfig() error {
 	viper.SetConfigType("toml")
 	viper.SetConfigFile(path + `/config.toml`)
 
-	viper.Set("gateway.url", "https://api.fildr.com/fildr-miner")
-	viper.Set("gateway.token", "")
-	viper.Set("gateway.instance", "")
-	viper.Set("gateway.evaluation", "5s")
+	viper.Set("gateway.url", viper.GetString("url"))
+	viper.Set("gateway.token", viper.GetString("token"))
+	viper.Set("gateway.instance", viper.GetString("instance"))
+	viper.Set("gateway.evaluation", viper.GetDuration("evaluation"))
 
 	viper.Set("lotus.daemon.enable", false)
 	viper.Set("lotus.daemon.ip", "127.0.0.1")

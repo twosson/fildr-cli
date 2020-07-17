@@ -17,8 +17,8 @@ import (
 // * filesystemCollector.GetStats
 
 var (
-	ignoredMountPoints = "^/(dev)($|/)"
-	ignoredFSTypes     = "^devfs$"
+	ignoredMountPoints = defIgnoredMountPoints
+	ignoredFSTypes     = defIgnoredFSTypes
 
 	filesystemLabelNames = []string{"device", "mountpoint", "fstype"}
 )

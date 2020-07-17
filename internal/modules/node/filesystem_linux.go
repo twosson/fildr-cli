@@ -116,7 +116,7 @@ func stuckMountWatcher(mountPoint string, success chan struct{}, logger log.Logg
 		case <-success:
 			// Success came in just after the timeout was reached, don't label the mount as stuck
 		default:
-			logger.Infof("msg", "Mount point timed out, it is being labeled as stuck and will not be monitored", "mountpoint", mountPoint)
+			log.NopLogger().Warnf("msg", "Mount point timed out, it is being labeled as stuck and will not be monitored", "mountpoint", mountPoint)
 			stuckMounts[mountPoint] = struct{}{}
 		}
 		stuckMountsMtx.Unlock()

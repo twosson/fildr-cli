@@ -4,6 +4,7 @@ package node
 
 import (
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -18,7 +19,7 @@ func init() {
 }
 
 // NewEntropyCollector returns a new Collector exposing entropy stats.
-func NewEntropyCollector(logger log.Logger) (Collector, error) {
+func NewEntropyCollector(logger log.Logger) (pusher.Collector, error) {
 	return &entropyCollector{
 		entropyAvail: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "entropy_available_bits"),

@@ -5,6 +5,7 @@ package node
 import (
 	"encoding/json"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"github.com/ema/qdisc"
 	"github.com/prometheus/client_golang/prometheus"
 	"io/ioutil"
@@ -12,13 +13,13 @@ import (
 )
 
 type qdiscStatCollector struct {
-	bytes      typedDesc
-	packets    typedDesc
-	drops      typedDesc
-	requeues   typedDesc
-	overlimits typedDesc
-	qlength    typedDesc
-	backlog    typedDesc
+	bytes      pusher.TypedDesc
+	packets    pusher.TypedDesc
+	drops      pusher.TypedDesc
+	requeues   pusher.TypedDesc
+	overlimits pusher.TypedDesc
+	qlength    pusher.TypedDesc
+	backlog    pusher.TypedDesc
 	logger     log.Logger
 }
 
@@ -31,39 +32,39 @@ func init() {
 }
 
 // NewQdiscStatCollector returns a new Collector exposing queuing discipline statistics.
-func NewQdiscStatCollector(logger log.Logger) (Collector, error) {
+func NewQdiscStatCollector(logger log.Logger) (pusher.Collector, error) {
 	return &qdiscStatCollector{
-		bytes: typedDesc{prometheus.NewDesc(
+		bytes: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "bytes_total"),
 			"Number of bytes sent.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.CounterValue},
-		packets: typedDesc{prometheus.NewDesc(
+		packets: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "packets_total"),
 			"Number of packets sent.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.CounterValue},
-		drops: typedDesc{prometheus.NewDesc(
+		drops: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "drops_total"),
 			"Number of packets dropped.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.CounterValue},
-		requeues: typedDesc{prometheus.NewDesc(
+		requeues: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "requeues_total"),
 			"Number of packets dequeued, not transmitted, and requeued.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.CounterValue},
-		overlimits: typedDesc{prometheus.NewDesc(
+		overlimits: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "overlimits_total"),
 			"Number of overlimit packets.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.CounterValue},
-		qlength: typedDesc{prometheus.NewDesc(
+		qlength: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "current_queue_length"),
 			"Number of packets currently in queue to be sent.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.GaugeValue},
-		backlog: typedDesc{prometheus.NewDesc(
+		backlog: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "backlog"),
 			"Number of bytes currently in queue to be sent.",
 			[]string{"device", "kind"}, nil,
@@ -106,13 +107,13 @@ func (c *qdiscStatCollector) Update(ch chan<- prometheus.Metric) error {
 			continue
 		}
 
-		ch <- c.bytes.mustNewConstMetric(float64(msg.Bytes), msg.IfaceName, msg.Kind)
-		ch <- c.packets.mustNewConstMetric(float64(msg.Packets), msg.IfaceName, msg.Kind)
-		ch <- c.drops.mustNewConstMetric(float64(msg.Drops), msg.IfaceName, msg.Kind)
-		ch <- c.requeues.mustNewConstMetric(float64(msg.Requeues), msg.IfaceName, msg.Kind)
-		ch <- c.overlimits.mustNewConstMetric(float64(msg.Overlimits), msg.IfaceName, msg.Kind)
-		ch <- c.qlength.mustNewConstMetric(float64(msg.Qlen), msg.IfaceName, msg.Kind)
-		ch <- c.backlog.mustNewConstMetric(float64(msg.Backlog), msg.IfaceName, msg.Kind)
+		ch <- c.bytes.MustNewConstMetric(float64(msg.Bytes), msg.IfaceName, msg.Kind)
+		ch <- c.packets.MustNewConstMetric(float64(msg.Packets), msg.IfaceName, msg.Kind)
+		ch <- c.drops.MustNewConstMetric(float64(msg.Drops), msg.IfaceName, msg.Kind)
+		ch <- c.requeues.MustNewConstMetric(float64(msg.Requeues), msg.IfaceName, msg.Kind)
+		ch <- c.overlimits.MustNewConstMetric(float64(msg.Overlimits), msg.IfaceName, msg.Kind)
+		ch <- c.qlength.MustNewConstMetric(float64(msg.Qlen), msg.IfaceName, msg.Kind)
+		ch <- c.backlog.MustNewConstMetric(float64(msg.Backlog), msg.IfaceName, msg.Kind)
 	}
 
 	return nil

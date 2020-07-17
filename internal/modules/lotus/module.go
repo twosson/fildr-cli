@@ -1,4 +1,4 @@
-package node
+package lotus
 
 import (
 	"context"
@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-var _ module.Module = (*NodeCollectorModule)(nil)
+var _ module.Module = (*LotusCollectorModule)(nil)
 
 var (
-	namespace = "node"
+	namespace = "lotus"
 	factories = make(map[string]func(logger log.Logger) (pusher.Collector, error))
 )
 
@@ -20,12 +20,12 @@ func registerCollector(collector string, factory func(logger log.Logger) (pusher
 	factories[collector] = factory
 }
 
-type NodeCollectorModule struct {
+type LotusCollectorModule struct {
 	promInstance *pusher.PromInstance
 	logger       log.Logger
 }
 
-func New(ctx context.Context) (*NodeCollectorModule, error) {
+func New(ctx context.Context) (*LotusCollectorModule, error) {
 	logger := log.From(ctx)
 
 	fc, err := pusher.NewFildrCollector(ctx, namespace)
@@ -47,15 +47,15 @@ func New(ctx context.Context) (*NodeCollectorModule, error) {
 		return nil, err
 	}
 
-	return &NodeCollectorModule{logger: logger, promInstance: promInstance}, nil
+	return &LotusCollectorModule{logger: logger, promInstance: promInstance}, nil
 }
 
-func (mod *NodeCollectorModule) Name() string {
-	return "node-collector"
+func (mod *LotusCollectorModule) Name() string {
+	return `lotus-collector`
 }
 
-func (mod *NodeCollectorModule) Start() error {
-	mod.logger.Infof("node collector starting ...")
+func (mod *LotusCollectorModule) Start() error {
+	mod.logger.Infof("lotus collector starting ...")
 
 	cfg := config.Get()
 	eval := cfg.Gateway.Evaluation
@@ -77,6 +77,6 @@ func (mod *NodeCollectorModule) Start() error {
 	return nil
 }
 
-func (mod *NodeCollectorModule) Stop() {
+func (mod *LotusCollectorModule) Stop() {
 
 }

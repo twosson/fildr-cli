@@ -1,22 +1,15 @@
 package command
 
 import (
+	"fildr-cli/internal/config"
 	"fmt"
 	"github.com/spf13/cobra"
-	"io/ioutil"
+	golog "log"
 	"os"
-	"os/user"
+	"time"
 )
 
-var cfg = `
-[gateway]
-url = "https://api.fildr.com/fildr-miner"
-token = ""
-instance = ""
-evaluation = 5
-`
-
-func newInitializationCmd(version, gitCommit, buildTime string) *cobra.Command {
+func newInitializationCmd() *cobra.Command {
 
 	initializationCmd := &cobra.Command{
 		Use:   "init",
@@ -24,20 +17,24 @@ func newInitializationCmd(version, gitCommit, buildTime string) *cobra.Command {
 		Long:  "Initialization config",
 		Run: func(cmd *cobra.Command, args []string) {
 			out := cmd.OutOrStdout()
-			user, err := user.Current()
-			path := user.HomeDir + "/.fildr"
-			_, err = os.Stat(path)
-			if err != nil {
-				err = os.Mkdir(path, os.ModePerm)
-				if err != nil {
-					fmt.Fprintf(out, "Error creating folder: %s", err.Error())
-					os.Exit(1)
-				}
+
+			if err := bindViper(cmd); err != nil {
+				golog.Println("unable to bind flags: ", err)
 			}
 
-			ioutil.WriteFile(path+"/config.toml", []byte(cfg), os.ModePerm)
-			fmt.Fprintln(out, "Initialization complete")
+			if err := config.InitializationConfig(); err != nil {
+				fmt.Fprintln(out, "initialization config err: ", err)
+				os.Exit(1)
+			}
+			fmt.Fprintln(out, "initialization complete.")
 		},
 	}
+
+	initializationCmd.Flags().SortFlags = false
+	initializationCmd.Flags().StringP("gateway.token", "", "", "config gateway token")
+	initializationCmd.Flags().StringP("gateway.instance", "", "", "config gateway instance")
+	initializationCmd.Flags().DurationP("gateway.evaluation", "", time.Second*5, "config gateway evaluation")
+	initializationCmd.Flags().StringP("gateway.url", "", "https://api.fildr.com/fildr-miner", "config gateway url")
+
 	return initializationCmd
 }

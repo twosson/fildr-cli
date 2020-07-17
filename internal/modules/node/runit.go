@@ -4,6 +4,7 @@ package node
 
 import (
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/soundcloud/go-runit/runit"
 )
@@ -11,10 +12,10 @@ import (
 var runitServiceDir = "/etc/service"
 
 type runitCollector struct {
-	state          typedDesc
-	stateDesired   typedDesc
-	stateNormal    typedDesc
-	stateTimestamp typedDesc
+	state          pusher.TypedDesc
+	stateDesired   pusher.TypedDesc
+	stateNormal    pusher.TypedDesc
+	stateTimestamp pusher.TypedDesc
 	logger         log.Logger
 }
 
@@ -23,7 +24,7 @@ func init() {
 }
 
 // NewRunitCollector returns a new Collector exposing runit statistics.
-func NewRunitCollector(logger log.Logger) (Collector, error) {
+func NewRunitCollector(logger log.Logger) (pusher.Collector, error) {
 	var (
 		subsystem   = "service"
 		constLabels = prometheus.Labels{"supervisor": "runit"}
@@ -31,22 +32,22 @@ func NewRunitCollector(logger log.Logger) (Collector, error) {
 	)
 
 	return &runitCollector{
-		state: typedDesc{prometheus.NewDesc(
+		state: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "state"),
 			"State of runit service.",
 			labelNames, constLabels,
 		), prometheus.GaugeValue},
-		stateDesired: typedDesc{prometheus.NewDesc(
+		stateDesired: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "desired_state"),
 			"Desired state of runit service.",
 			labelNames, constLabels,
 		), prometheus.GaugeValue},
-		stateNormal: typedDesc{prometheus.NewDesc(
+		stateNormal: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "normal_state"),
 			"Normal state of runit service.",
 			labelNames, constLabels,
 		), prometheus.GaugeValue},
-		stateTimestamp: typedDesc{prometheus.NewDesc(
+		stateTimestamp: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "state_last_change_timestamp_seconds"),
 			"Unix timestamp of the last runit service state change.",
 			labelNames, constLabels,
@@ -69,13 +70,13 @@ func (c *runitCollector) Update(ch chan<- prometheus.Metric) error {
 		}
 
 		c.logger.Debugf("msg", "duration", "service", service.Name, "status", status.State, "pid", status.Pid, "duration_seconds", status.Duration)
-		ch <- c.state.mustNewConstMetric(float64(status.State), service.Name)
-		ch <- c.stateDesired.mustNewConstMetric(float64(status.Want), service.Name)
-		ch <- c.stateTimestamp.mustNewConstMetric(float64(status.Timestamp.Unix()), service.Name)
+		ch <- c.state.MustNewConstMetric(float64(status.State), service.Name)
+		ch <- c.stateDesired.MustNewConstMetric(float64(status.Want), service.Name)
+		ch <- c.stateTimestamp.MustNewConstMetric(float64(status.Timestamp.Unix()), service.Name)
 		if status.NormallyUp {
-			ch <- c.stateNormal.mustNewConstMetric(1, service.Name)
+			ch <- c.stateNormal.MustNewConstMetric(1, service.Name)
 		} else {
-			ch <- c.stateNormal.mustNewConstMetric(0, service.Name)
+			ch <- c.stateNormal.MustNewConstMetric(0, service.Name)
 		}
 	}
 	return nil

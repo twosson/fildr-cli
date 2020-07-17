@@ -5,6 +5,7 @@ package node
 import (
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"
@@ -26,7 +27,7 @@ func init() {
 }
 
 // NewProcessStatCollector returns a new Collector exposing process data read from the proc filesystem.
-func NewProcessStatCollector(logger log.Logger) (Collector, error) {
+func NewProcessStatCollector(logger log.Logger) (pusher.Collector, error) {
 	fs, err := procfs.NewFS(procPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open procfs: %w", err)

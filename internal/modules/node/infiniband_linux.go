@@ -6,6 +6,7 @@ package node
 import (
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs/sysfs"
@@ -25,7 +26,7 @@ func init() {
 }
 
 // NewInfiniBandCollector returns a new Collector exposing InfiniBand stats.
-func NewInfiniBandCollector(logger log.Logger) (Collector, error) {
+func NewInfiniBandCollector(logger log.Logger) (pusher.Collector, error) {
 	var i infinibandCollector
 	var err error
 
@@ -96,7 +97,7 @@ func (c *infinibandCollector) Update(ch chan<- prometheus.Metric) error {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			c.logger.Debugf("msg", "infiniband statistics not found, skipping")
-			return ErrNoData
+			return pusher.ErrNoData
 		}
 		return fmt.Errorf("error obtaining InfiniBand class info: %w", err)
 	}

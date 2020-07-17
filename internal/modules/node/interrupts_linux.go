@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io"
@@ -20,7 +21,7 @@ var (
 )
 
 type interruptsCollector struct {
-	desc   typedDesc
+	desc   pusher.TypedDesc
 	logger log.Logger
 }
 
@@ -29,9 +30,9 @@ func init() {
 }
 
 // NewInterruptsCollector returns a new Collector exposing interrupts stats.
-func NewInterruptsCollector(logger log.Logger) (Collector, error) {
+func NewInterruptsCollector(logger log.Logger) (pusher.Collector, error) {
 	return &interruptsCollector{
-		desc: typedDesc{prometheus.NewDesc(
+		desc: pusher.TypedDesc{prometheus.NewDesc(
 			namespace+"_interrupts_total",
 			"Interrupt details.",
 			interruptLabelNames, nil,
@@ -51,7 +52,7 @@ func (c *interruptsCollector) Update(ch chan<- prometheus.Metric) (err error) {
 			if err != nil {
 				return fmt.Errorf("invalid value %s in interrupts: %w", value, err)
 			}
-			ch <- c.desc.mustNewConstMetric(fv, strconv.Itoa(cpuNo), name, interrupt.info, interrupt.devices)
+			ch <- c.desc.MustNewConstMetric(fv, strconv.Itoa(cpuNo), name, interrupt.info, interrupt.devices)
 		}
 	}
 	return err

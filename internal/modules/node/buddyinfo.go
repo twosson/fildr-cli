@@ -5,6 +5,7 @@ package node
 
 import (
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"
@@ -26,7 +27,7 @@ func init() {
 }
 
 // NewBuddyinfoCollector returns a new Collector exposing buddyinfo stats.
-func NewBuddyinfoCollector(logger log.Logger) (Collector, error) {
+func NewBuddyinfoCollector(logger log.Logger) (pusher.Collector, error) {
 	desc := prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, buddyInfoSubsystem, "blocks"),
 		"Count of free blocks according to size.",

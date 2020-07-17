@@ -5,6 +5,7 @@ package node
 
 import (
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/sys/unix"
@@ -40,7 +41,7 @@ type timexCollector struct {
 	errcnt,
 	stbcnt,
 	tai,
-	syncStatus typedDesc
+	syncStatus pusher.TypedDesc
 	logger log.Logger
 }
 
@@ -49,91 +50,91 @@ func init() {
 }
 
 // NewTimexCollector returns a new Collector exposing adjtime(3) stats.
-func NewTimexCollector(logger log.Logger) (Collector, error) {
+func NewTimexCollector(logger log.Logger) (pusher.Collector, error) {
 	const subsystem = "timex"
 
 	return &timexCollector{
-		offset: typedDesc{prometheus.NewDesc(
+		offset: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "offset_seconds"),
 			"Time offset in between local system and reference clock.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		freq: typedDesc{prometheus.NewDesc(
+		freq: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "frequency_adjustment_ratio"),
 			"Local clock frequency adjustment.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		maxerror: typedDesc{prometheus.NewDesc(
+		maxerror: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "maxerror_seconds"),
 			"Maximum error in seconds.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		esterror: typedDesc{prometheus.NewDesc(
+		esterror: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "estimated_error_seconds"),
 			"Estimated error in seconds.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		status: typedDesc{prometheus.NewDesc(
+		status: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "status"),
 			"Value of the status array bits.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		constant: typedDesc{prometheus.NewDesc(
+		constant: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "loop_time_constant"),
 			"Phase-locked loop time constant.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		tick: typedDesc{prometheus.NewDesc(
+		tick: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "tick_seconds"),
 			"Seconds between clock ticks.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		ppsfreq: typedDesc{prometheus.NewDesc(
+		ppsfreq: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_frequency_hertz"),
 			"Pulse per second frequency.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		jitter: typedDesc{prometheus.NewDesc(
+		jitter: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_jitter_seconds"),
 			"Pulse per second jitter.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		shift: typedDesc{prometheus.NewDesc(
+		shift: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_shift_seconds"),
 			"Pulse per second interval duration.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		stabil: typedDesc{prometheus.NewDesc(
+		stabil: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_stability_hertz"),
 			"Pulse per second stability, average of recent frequency changes.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		jitcnt: typedDesc{prometheus.NewDesc(
+		jitcnt: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_jitter_total"),
 			"Pulse per second count of jitter limit exceeded events.",
 			nil, nil,
 		), prometheus.CounterValue},
-		calcnt: typedDesc{prometheus.NewDesc(
+		calcnt: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_calibration_total"),
 			"Pulse per second count of calibration intervals.",
 			nil, nil,
 		), prometheus.CounterValue},
-		errcnt: typedDesc{prometheus.NewDesc(
+		errcnt: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_error_total"),
 			"Pulse per second count of calibration errors.",
 			nil, nil,
 		), prometheus.CounterValue},
-		stbcnt: typedDesc{prometheus.NewDesc(
+		stbcnt: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_stability_exceeded_total"),
 			"Pulse per second count of stability limit exceeded events.",
 			nil, nil,
 		), prometheus.CounterValue},
-		tai: typedDesc{prometheus.NewDesc(
+		tai: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "tai_offset_seconds"),
 			"International Atomic Time (TAI) offset.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		syncStatus: typedDesc{prometheus.NewDesc(
+		syncStatus: pusher.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "sync_status"),
 			"Is clock synchronized to a reliable server (1 = yes, 0 = no).",
 			nil, nil,
@@ -165,23 +166,23 @@ func (c *timexCollector) Update(ch chan<- prometheus.Metric) error {
 	// See NOTES in adjtimex(2).
 	const ppm16frac = 1000000.0 * 65536.0
 
-	ch <- c.syncStatus.mustNewConstMetric(syncStatus)
-	ch <- c.offset.mustNewConstMetric(float64(timex.Offset) / divisor)
-	ch <- c.freq.mustNewConstMetric(1 + float64(timex.Freq)/ppm16frac)
-	ch <- c.maxerror.mustNewConstMetric(float64(timex.Maxerror) / microSeconds)
-	ch <- c.esterror.mustNewConstMetric(float64(timex.Esterror) / microSeconds)
-	ch <- c.status.mustNewConstMetric(float64(timex.Status))
-	ch <- c.constant.mustNewConstMetric(float64(timex.Constant))
-	ch <- c.tick.mustNewConstMetric(float64(timex.Tick) / microSeconds)
-	ch <- c.ppsfreq.mustNewConstMetric(float64(timex.Ppsfreq) / ppm16frac)
-	ch <- c.jitter.mustNewConstMetric(float64(timex.Jitter) / divisor)
-	ch <- c.shift.mustNewConstMetric(float64(timex.Shift))
-	ch <- c.stabil.mustNewConstMetric(float64(timex.Stabil) / ppm16frac)
-	ch <- c.jitcnt.mustNewConstMetric(float64(timex.Jitcnt))
-	ch <- c.calcnt.mustNewConstMetric(float64(timex.Calcnt))
-	ch <- c.errcnt.mustNewConstMetric(float64(timex.Errcnt))
-	ch <- c.stbcnt.mustNewConstMetric(float64(timex.Stbcnt))
-	ch <- c.tai.mustNewConstMetric(float64(timex.Tai))
+	ch <- c.syncStatus.MustNewConstMetric(syncStatus)
+	ch <- c.offset.MustNewConstMetric(float64(timex.Offset) / divisor)
+	ch <- c.freq.MustNewConstMetric(1 + float64(timex.Freq)/ppm16frac)
+	ch <- c.maxerror.MustNewConstMetric(float64(timex.Maxerror) / microSeconds)
+	ch <- c.esterror.MustNewConstMetric(float64(timex.Esterror) / microSeconds)
+	ch <- c.status.MustNewConstMetric(float64(timex.Status))
+	ch <- c.constant.MustNewConstMetric(float64(timex.Constant))
+	ch <- c.tick.MustNewConstMetric(float64(timex.Tick) / microSeconds)
+	ch <- c.ppsfreq.MustNewConstMetric(float64(timex.Ppsfreq) / ppm16frac)
+	ch <- c.jitter.MustNewConstMetric(float64(timex.Jitter) / divisor)
+	ch <- c.shift.MustNewConstMetric(float64(timex.Shift))
+	ch <- c.stabil.MustNewConstMetric(float64(timex.Stabil) / ppm16frac)
+	ch <- c.jitcnt.MustNewConstMetric(float64(timex.Jitcnt))
+	ch <- c.calcnt.MustNewConstMetric(float64(timex.Calcnt))
+	ch <- c.errcnt.MustNewConstMetric(float64(timex.Errcnt))
+	ch <- c.stbcnt.MustNewConstMetric(float64(timex.Stbcnt))
+	ch <- c.tai.MustNewConstMetric(float64(timex.Tai))
 
 	return nil
 }

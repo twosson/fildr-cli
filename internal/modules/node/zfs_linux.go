@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io"
@@ -33,7 +34,7 @@ type zfsCollector struct {
 }
 
 // NewZFSCollector returns a new Collector exposing ZFS statistics.
-func NewZFSCollector(logger log.Logger) (Collector, error) {
+func NewZFSCollector(logger log.Logger) (pusher.Collector, error) {
 	return &zfsCollector{
 		linuxProcpathBase:    "spl/kstat/zfs",
 		linuxZpoolIoPath:     "/*/io",

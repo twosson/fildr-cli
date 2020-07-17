@@ -4,6 +4,7 @@ package node
 
 import (
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"
@@ -38,7 +39,7 @@ type cpuCollector struct {
 	logger             log.Logger
 }
 
-func NewCpuCollector(logger log.Logger) (Collector, error) {
+func NewCpuCollector(logger log.Logger) (pusher.Collector, error) {
 
 	fs, err := procfs.NewFS(procPath)
 	if err != nil {

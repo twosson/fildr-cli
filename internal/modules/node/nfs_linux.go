@@ -5,6 +5,7 @@ package node
 import (
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs/nfs"
@@ -32,7 +33,7 @@ func init() {
 }
 
 // NewNfsCollector returns a new Collector exposing NFS statistics.
-func NewNfsCollector(logger log.Logger) (Collector, error) {
+func NewNfsCollector(logger log.Logger) (pusher.Collector, error) {
 	fs, err := nfs.NewFS(procPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open procfs: %w", err)
@@ -85,7 +86,7 @@ func (c *nfsCollector) Update(ch chan<- prometheus.Metric) error {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			c.logger.Debugf("msg", "Not collecting NFS metrics", "err", err)
-			return ErrNoData
+			return pusher.ErrNoData
 		}
 		return fmt.Errorf("failed to retrieve nfs stats: %w", err)
 	}

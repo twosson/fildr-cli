@@ -4,6 +4,7 @@ package node
 
 import (
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
@@ -39,7 +40,7 @@ func init() {
 
 // NewTextFileCollector returns a new Collector exposing metrics read from files
 // in the given textfile directory.
-func NewTextFileCollector(logger log.Logger) (Collector, error) {
+func NewTextFileCollector(logger log.Logger) (pusher.Collector, error) {
 	c := &textFileCollector{
 		path:   textFileDirectory,
 		logger: logger,

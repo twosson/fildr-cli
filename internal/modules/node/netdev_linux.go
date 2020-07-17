@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io"
@@ -41,7 +42,7 @@ func init() {
 }
 
 // NewNetDevCollector returns a new Collector exposing network device stats.
-func NewNetDevCollector(logger log.Logger) (Collector, error) {
+func NewNetDevCollector(logger log.Logger) (pusher.Collector, error) {
 	if oldNetdevDeviceInclude != "" {
 		if netdevDeviceInclude == "" {
 			logger.Warnf("msg", "--collector.netdev.device-whitelist is DEPRECATED and will be removed in 2.0.0, use --collector.netdev.device-include")

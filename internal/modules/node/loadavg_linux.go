@@ -5,6 +5,7 @@ package node
 
 import (
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io/ioutil"
@@ -13,7 +14,7 @@ import (
 )
 
 type loadavgCollector struct {
-	metric []typedDesc
+	metric []pusher.TypedDesc
 	logger log.Logger
 }
 
@@ -22,9 +23,9 @@ func init() {
 }
 
 // NewLoadavgCollector returns a new Collector exposing load average stats.
-func NewLoadavgCollector(logger log.Logger) (Collector, error) {
+func NewLoadavgCollector(logger log.Logger) (pusher.Collector, error) {
 	return &loadavgCollector{
-		metric: []typedDesc{
+		metric: []pusher.TypedDesc{
 			{prometheus.NewDesc(namespace+"_load1", "1m load average.", nil, nil), prometheus.GaugeValue},
 			{prometheus.NewDesc(namespace+"_load5", "5m load average.", nil, nil), prometheus.GaugeValue},
 			{prometheus.NewDesc(namespace+"_load15", "15m load average.", nil, nil), prometheus.GaugeValue},
@@ -40,7 +41,7 @@ func (c *loadavgCollector) Update(ch chan<- prometheus.Metric) error {
 	}
 	for i, load := range loads {
 		c.logger.Debugf("msg", "return load", "index", i, "load", load)
-		ch <- c.metric[i].mustNewConstMetric(load)
+		ch <- c.metric[i].MustNewConstMetric(load)
 	}
 	return err
 }

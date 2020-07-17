@@ -5,6 +5,7 @@ package node
 import (
 	"errors"
 	"fildr-cli/internal/log"
+	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/coreos/go-systemd/dbus"
 	"github.com/prometheus/client_golang/prometheus"
@@ -60,7 +61,7 @@ func init() {
 }
 
 // NewSystemdCollector returns a new Collector exposing systemd statistics.
-func NewSystemdCollector(logger log.Logger) (Collector, error) {
+func NewSystemdCollector(logger log.Logger) (pusher.Collector, error) {
 	const subsystem = "systemd"
 
 	unitDesc := prometheus.NewDesc(

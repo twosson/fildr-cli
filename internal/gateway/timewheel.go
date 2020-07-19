@@ -30,18 +30,9 @@ func Run(ctx context.Context) error {
 			return
 		}
 		for i := range datas {
-			//push(datas[i])
 			postGateway(datas[i])
 		}
 	})
-
-	//tws.AddCron(time.Second*5, func() {
-	//	md := pop()
-	//	if md != nil {
-	//		fmt.Println(md)
-	//		postGateway(md)
-	//	}
-	//})
 
 	tws.Start()
 	return nil

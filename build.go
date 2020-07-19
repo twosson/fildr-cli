@@ -16,7 +16,7 @@ var (
 	GOPATH     = os.Getenv("GOPATH")
 	GIT_COMMIT = gitCommit()
 	BUILD_TIME = time.Now().UTC().Format(time.RFC3339)
-	LD_FLAGS   = fmt.Sprintf("-X \"main.buildTime=%s\" -X main.gitCommit=%s", BUILD_TIME, GIT_COMMIT)
+	LD_FLAGS   = fmt.Sprintf("-X \"main.version=%s\" -X \"main.buildTime=%s\" -X main.gitCommit=%s", VERSION, BUILD_TIME, GIT_COMMIT)
 	GO_FLAGS   = fmt.Sprintf("-ldflags=%s", LD_FLAGS)
 )
 

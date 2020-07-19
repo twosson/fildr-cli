@@ -3,8 +3,8 @@
 package node
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs/bcache"
@@ -22,7 +22,7 @@ type bcacheCollector struct {
 
 // NewBcacheCollector returns a newly allocated bcacheCollector.
 // It exposes a number of Linux bcache statistics.
-func NewBcacheCollector(logger log.Logger) (pusher.Collector, error) {
+func NewBcacheCollector(logger log.Logger) (gateway.Collector, error) {
 	fs, err := bcache.NewFS(sysPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open sysfs: %w", err)

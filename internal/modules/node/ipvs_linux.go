@@ -4,8 +4,8 @@ package node
 
 import (
 	"errors"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"
@@ -17,11 +17,11 @@ import (
 )
 
 type ipvsCollector struct {
-	pusher.Collector
+	gateway.Collector
 	fs                                                                          procfs.FS
 	backendLabels                                                               []string
-	backendConnectionsActive, backendConnectionsInact, backendWeight            pusher.TypedDesc
-	connections, incomingPackets, outgoingPackets, incomingBytes, outgoingBytes pusher.TypedDesc
+	backendConnectionsActive, backendConnectionsInact, backendWeight            gateway.TypedDesc
+	connections, incomingPackets, outgoingPackets, incomingBytes, outgoingBytes gateway.TypedDesc
 	logger                                                                      log.Logger
 }
 
@@ -58,7 +58,7 @@ func init() {
 
 // NewIPVSCollector sets up a new collector for IPVS metrics. It accepts the
 // "procfs" config parameter to override the default proc location (/proc).
-func NewIPVSCollector(logger log.Logger) (pusher.Collector, error) {
+func NewIPVSCollector(logger log.Logger) (gateway.Collector, error) {
 	return newIPVSCollector(logger)
 }
 
@@ -79,42 +79,42 @@ func newIPVSCollector(logger log.Logger) (*ipvsCollector, error) {
 		return nil, fmt.Errorf("failed to open procfs: %w", err)
 	}
 
-	c.connections = pusher.TypedDesc{prometheus.NewDesc(
+	c.connections = gateway.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "connections_total"),
 		"The total number of connections made.",
 		nil, nil,
 	), prometheus.CounterValue}
-	c.incomingPackets = pusher.TypedDesc{prometheus.NewDesc(
+	c.incomingPackets = gateway.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "incoming_packets_total"),
 		"The total number of incoming packets.",
 		nil, nil,
 	), prometheus.CounterValue}
-	c.outgoingPackets = pusher.TypedDesc{prometheus.NewDesc(
+	c.outgoingPackets = gateway.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "outgoing_packets_total"),
 		"The total number of outgoing packets.",
 		nil, nil,
 	), prometheus.CounterValue}
-	c.incomingBytes = pusher.TypedDesc{prometheus.NewDesc(
+	c.incomingBytes = gateway.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "incoming_bytes_total"),
 		"The total amount of incoming data.",
 		nil, nil,
 	), prometheus.CounterValue}
-	c.outgoingBytes = pusher.TypedDesc{prometheus.NewDesc(
+	c.outgoingBytes = gateway.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "outgoing_bytes_total"),
 		"The total amount of outgoing data.",
 		nil, nil,
 	), prometheus.CounterValue}
-	c.backendConnectionsActive = pusher.TypedDesc{prometheus.NewDesc(
+	c.backendConnectionsActive = gateway.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "backend_connections_active"),
 		"The current active connections by local and remote address.",
 		c.backendLabels, nil,
 	), prometheus.GaugeValue}
-	c.backendConnectionsInact = pusher.TypedDesc{prometheus.NewDesc(
+	c.backendConnectionsInact = gateway.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "backend_connections_inactive"),
 		"The current inactive connections by local and remote address.",
 		c.backendLabels, nil,
 	), prometheus.GaugeValue}
-	c.backendWeight = pusher.TypedDesc{prometheus.NewDesc(
+	c.backendWeight = gateway.TypedDesc{prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, subsystem, "backend_weight"),
 		"The current backend weight by local and remote address.",
 		c.backendLabels, nil,
@@ -129,7 +129,7 @@ func (c *ipvsCollector) Update(ch chan<- prometheus.Metric) error {
 		// Cannot access ipvs metrics, report no error.
 		if errors.Is(err, os.ErrNotExist) {
 			c.logger.Debugf("msg", "ipvs collector metrics are not available for this system")
-			return pusher.ErrNoData
+			return gateway.ErrNoData
 		}
 		return fmt.Errorf("could not get IPVS stats: %w", err)
 	}

@@ -3,8 +3,8 @@
 package node
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs/xfs"
@@ -21,7 +21,7 @@ func init() {
 }
 
 // NewXFSCollector returns a new Collector exposing XFS statistics.
-func NewXFSCollector(logger log.Logger) (pusher.Collector, error) {
+func NewXFSCollector(logger log.Logger) (gateway.Collector, error) {
 	fs, err := xfs.NewFS(procPath, sysPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open sysfs: %w", err)

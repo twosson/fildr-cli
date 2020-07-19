@@ -3,8 +3,8 @@
 package node
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"
@@ -28,7 +28,7 @@ func init() {
 }
 
 // NewSoftnetCollector returns a new Collector exposing softnet metrics.
-func NewSoftnetCollector(logger log.Logger) (pusher.Collector, error) {
+func NewSoftnetCollector(logger log.Logger) (gateway.Collector, error) {
 	fs, err := procfs.NewFS(procPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open procfs: %w", err)

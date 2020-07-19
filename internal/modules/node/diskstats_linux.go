@@ -4,8 +4,8 @@ package node
 
 import (
 	"bufio"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io"
@@ -101,7 +101,7 @@ func init() {
 
 // NewDiskstatsCollector returns a new Collector exposing disk device stats.
 // Docs from https://www.kernel.org/doc/Documentation/iostats.txt
-func NewDiskstatsCollector(logger log.Logger) (pusher.Collector, error) {
+func NewDiskstatsCollector(logger log.Logger) (gateway.Collector, error) {
 	var diskLabelNames = []string{"device"}
 
 	return &diskstatsCollector{

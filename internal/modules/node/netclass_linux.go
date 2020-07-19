@@ -4,8 +4,8 @@
 package node
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs/sysfs"
@@ -29,7 +29,7 @@ func init() {
 }
 
 // NewNetClassCollector returns a new Collector exposing network class stats.
-func NewNetClassCollector(logger log.Logger) (pusher.Collector, error) {
+func NewNetClassCollector(logger log.Logger) (gateway.Collector, error) {
 	fs, err := sysfs.NewFS(sysPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open sysfs: %w", err)

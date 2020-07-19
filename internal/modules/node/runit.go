@@ -3,8 +3,8 @@
 package node
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/soundcloud/go-runit/runit"
 )
@@ -12,10 +12,10 @@ import (
 var runitServiceDir = "/etc/service"
 
 type runitCollector struct {
-	state          pusher.TypedDesc
-	stateDesired   pusher.TypedDesc
-	stateNormal    pusher.TypedDesc
-	stateTimestamp pusher.TypedDesc
+	state          gateway.TypedDesc
+	stateDesired   gateway.TypedDesc
+	stateNormal    gateway.TypedDesc
+	stateTimestamp gateway.TypedDesc
 	logger         log.Logger
 }
 
@@ -24,7 +24,7 @@ func init() {
 }
 
 // NewRunitCollector returns a new Collector exposing runit statistics.
-func NewRunitCollector(logger log.Logger) (pusher.Collector, error) {
+func NewRunitCollector(logger log.Logger) (gateway.Collector, error) {
 	var (
 		subsystem   = "service"
 		constLabels = prometheus.Labels{"supervisor": "runit"}
@@ -32,22 +32,22 @@ func NewRunitCollector(logger log.Logger) (pusher.Collector, error) {
 	)
 
 	return &runitCollector{
-		state: pusher.TypedDesc{prometheus.NewDesc(
+		state: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "state"),
 			"State of runit service.",
 			labelNames, constLabels,
 		), prometheus.GaugeValue},
-		stateDesired: pusher.TypedDesc{prometheus.NewDesc(
+		stateDesired: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "desired_state"),
 			"Desired state of runit service.",
 			labelNames, constLabels,
 		), prometheus.GaugeValue},
-		stateNormal: pusher.TypedDesc{prometheus.NewDesc(
+		stateNormal: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "normal_state"),
 			"Normal state of runit service.",
 			labelNames, constLabels,
 		), prometheus.GaugeValue},
-		stateTimestamp: pusher.TypedDesc{prometheus.NewDesc(
+		stateTimestamp: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "state_last_change_timestamp_seconds"),
 			"Unix timestamp of the last runit service state change.",
 			labelNames, constLabels,

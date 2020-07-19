@@ -5,8 +5,8 @@ package node
 
 import (
 	"bufio"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io"
@@ -33,7 +33,7 @@ func init() {
 }
 
 // NewMeminfoCollector returns a new Collector exposing memory stats.
-func NewMeminfoCollector(logger log.Logger) (pusher.Collector, error) {
+func NewMeminfoCollector(logger log.Logger) (gateway.Collector, error) {
 	return &meminfoCollector{logger}, nil
 }
 

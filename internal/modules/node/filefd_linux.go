@@ -4,8 +4,8 @@ package node
 
 import (
 	"bytes"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io/ioutil"
@@ -26,7 +26,7 @@ func init() {
 }
 
 // NewFileFDStatCollector returns a new Collector exposing file-nr stats.
-func NewFileFDStatCollector(logger log.Logger) (pusher.Collector, error) {
+func NewFileFDStatCollector(logger log.Logger) (gateway.Collector, error) {
 	return &fileFDStatCollector{logger}, nil
 }
 

@@ -3,8 +3,8 @@
 package node
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/beevik/ntp"
 	"github.com/prometheus/client_golang/prometheus"
@@ -33,7 +33,7 @@ var (
 )
 
 type ntpCollector struct {
-	stratum, leap, rtt, offset, reftime, rootDelay, rootDispersion, sanity pusher.TypedDesc
+	stratum, leap, rtt, offset, reftime, rootDelay, rootDispersion, sanity gateway.TypedDesc
 	logger                                                                 log.Logger
 }
 
@@ -45,7 +45,7 @@ func init() {
 // Default definition of "local" is:
 // - collector.ntp.server address is a loopback address (or collector.ntp.server-is-mine flag is turned on)
 // - the server is reachable with outgoin IP_TTL = 1
-func NewNtpCollector(logger log.Logger) (pusher.Collector, error) {
+func NewNtpCollector(logger log.Logger) (gateway.Collector, error) {
 	ipaddr := net.ParseIP(ntpServer)
 	if !ntpServerIsLocal && (ipaddr == nil || !ipaddr.IsLoopback()) {
 		return nil, fmt.Errorf("only IP address of local NTP server is valid for --collector.ntp.server")
@@ -60,42 +60,42 @@ func NewNtpCollector(logger log.Logger) (pusher.Collector, error) {
 	}
 
 	return &ntpCollector{
-		stratum: pusher.TypedDesc{prometheus.NewDesc(
+		stratum: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, ntpSubsystem, "stratum"),
 			"NTPD stratum.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		leap: pusher.TypedDesc{prometheus.NewDesc(
+		leap: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, ntpSubsystem, "leap"),
 			"NTPD leap second indicator, 2 bits.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		rtt: pusher.TypedDesc{prometheus.NewDesc(
+		rtt: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, ntpSubsystem, "rtt_seconds"),
 			"RTT to NTPD.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		offset: pusher.TypedDesc{prometheus.NewDesc(
+		offset: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, ntpSubsystem, "offset_seconds"),
 			"ClockOffset between NTP and local clock.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		reftime: pusher.TypedDesc{prometheus.NewDesc(
+		reftime: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, ntpSubsystem, "reference_timestamp_seconds"),
 			"NTPD ReferenceTime, UNIX timestamp.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		rootDelay: pusher.TypedDesc{prometheus.NewDesc(
+		rootDelay: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, ntpSubsystem, "root_delay_seconds"),
 			"NTPD RootDelay.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		rootDispersion: pusher.TypedDesc{prometheus.NewDesc(
+		rootDispersion: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, ntpSubsystem, "root_dispersion_seconds"),
 			"NTPD RootDispersion.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		sanity: pusher.TypedDesc{prometheus.NewDesc(
+		sanity: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, ntpSubsystem, "sanity"),
 			"NTPD sanity according to RFC5905 heuristics and configured limits.",
 			nil, nil,

@@ -3,8 +3,8 @@
 package node
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/godbus/dbus"
 	"github.com/prometheus/client_golang/prometheus"
@@ -72,7 +72,7 @@ func init() {
 }
 
 // NewLogindCollector returns a new Collector exposing logind statistics.
-func NewLogindCollector(logger log.Logger) (pusher.Collector, error) {
+func NewLogindCollector(logger log.Logger) (gateway.Collector, error) {
 	return &logindCollector{logger}, nil
 }
 

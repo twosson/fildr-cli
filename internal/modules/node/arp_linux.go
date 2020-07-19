@@ -4,8 +4,8 @@ package node
 
 import (
 	"bufio"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io"
@@ -23,7 +23,7 @@ func init() {
 }
 
 // NewARPCollector returns a new Collector exposing ARP stats.
-func NewARPCollector(logger log.Logger) (pusher.Collector, error) {
+func NewARPCollector(logger log.Logger) (gateway.Collector, error) {
 	return &arpCollector{
 		entries: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "arp", "entries"),

@@ -3,8 +3,8 @@
 package node
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io"
@@ -46,7 +46,7 @@ const (
 )
 
 type tcpStatCollector struct {
-	desc   pusher.TypedDesc
+	desc   gateway.TypedDesc
 	logger log.Logger
 }
 
@@ -55,9 +55,9 @@ func init() {
 }
 
 // NewTCPStatCollector returns a new Collector exposing network stats.
-func NewTCPStatCollector(logger log.Logger) (pusher.Collector, error) {
+func NewTCPStatCollector(logger log.Logger) (gateway.Collector, error) {
 	return &tcpStatCollector{
-		desc: pusher.TypedDesc{prometheus.NewDesc(
+		desc: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "tcp", "connection_states"),
 			"Number of connection states.",
 			[]string{"state"}, nil,

@@ -4,8 +4,8 @@ package node
 
 import (
 	"errors"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"
@@ -38,7 +38,7 @@ var (
 )
 
 // NewSchedstatCollector returns a new Collector exposing task scheduler statistics
-func NewSchedstatCollector(logger log.Logger) (pusher.Collector, error) {
+func NewSchedstatCollector(logger log.Logger) (gateway.Collector, error) {
 	fs, err := procfs.NewFS(procPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open procfs: %w", err)
@@ -61,7 +61,7 @@ func (c *schedstatCollector) Update(ch chan<- prometheus.Metric) error {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			c.logger.Debugf("msg", "schedstat file does not exist")
-			return pusher.ErrNoData
+			return gateway.ErrNoData
 		}
 		return err
 	}

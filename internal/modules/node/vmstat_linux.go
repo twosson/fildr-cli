@@ -4,8 +4,8 @@ package node
 
 import (
 	"bufio"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"os"
@@ -32,7 +32,7 @@ func init() {
 }
 
 // NewvmStatCollector returns a new Collector exposing vmstat stats.
-func NewvmStatCollector(logger log.Logger) (pusher.Collector, error) {
+func NewvmStatCollector(logger log.Logger) (gateway.Collector, error) {
 	pattern := regexp.MustCompile(vmStatFields)
 	return &vmStatCollector{
 		fieldPattern: pattern,

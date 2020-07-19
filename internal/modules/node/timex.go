@@ -4,8 +4,8 @@
 package node
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/sys/unix"
@@ -41,7 +41,7 @@ type timexCollector struct {
 	errcnt,
 	stbcnt,
 	tai,
-	syncStatus pusher.TypedDesc
+	syncStatus gateway.TypedDesc
 	logger log.Logger
 }
 
@@ -50,91 +50,91 @@ func init() {
 }
 
 // NewTimexCollector returns a new Collector exposing adjtime(3) stats.
-func NewTimexCollector(logger log.Logger) (pusher.Collector, error) {
+func NewTimexCollector(logger log.Logger) (gateway.Collector, error) {
 	const subsystem = "timex"
 
 	return &timexCollector{
-		offset: pusher.TypedDesc{prometheus.NewDesc(
+		offset: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "offset_seconds"),
 			"Time offset in between local system and reference clock.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		freq: pusher.TypedDesc{prometheus.NewDesc(
+		freq: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "frequency_adjustment_ratio"),
 			"Local clock frequency adjustment.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		maxerror: pusher.TypedDesc{prometheus.NewDesc(
+		maxerror: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "maxerror_seconds"),
 			"Maximum error in seconds.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		esterror: pusher.TypedDesc{prometheus.NewDesc(
+		esterror: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "estimated_error_seconds"),
 			"Estimated error in seconds.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		status: pusher.TypedDesc{prometheus.NewDesc(
+		status: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "status"),
 			"Value of the status array bits.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		constant: pusher.TypedDesc{prometheus.NewDesc(
+		constant: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "loop_time_constant"),
 			"Phase-locked loop time constant.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		tick: pusher.TypedDesc{prometheus.NewDesc(
+		tick: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "tick_seconds"),
 			"Seconds between clock ticks.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		ppsfreq: pusher.TypedDesc{prometheus.NewDesc(
+		ppsfreq: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_frequency_hertz"),
 			"Pulse per second frequency.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		jitter: pusher.TypedDesc{prometheus.NewDesc(
+		jitter: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_jitter_seconds"),
 			"Pulse per second jitter.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		shift: pusher.TypedDesc{prometheus.NewDesc(
+		shift: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_shift_seconds"),
 			"Pulse per second interval duration.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		stabil: pusher.TypedDesc{prometheus.NewDesc(
+		stabil: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_stability_hertz"),
 			"Pulse per second stability, average of recent frequency changes.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		jitcnt: pusher.TypedDesc{prometheus.NewDesc(
+		jitcnt: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_jitter_total"),
 			"Pulse per second count of jitter limit exceeded events.",
 			nil, nil,
 		), prometheus.CounterValue},
-		calcnt: pusher.TypedDesc{prometheus.NewDesc(
+		calcnt: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_calibration_total"),
 			"Pulse per second count of calibration intervals.",
 			nil, nil,
 		), prometheus.CounterValue},
-		errcnt: pusher.TypedDesc{prometheus.NewDesc(
+		errcnt: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_error_total"),
 			"Pulse per second count of calibration errors.",
 			nil, nil,
 		), prometheus.CounterValue},
-		stbcnt: pusher.TypedDesc{prometheus.NewDesc(
+		stbcnt: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "pps_stability_exceeded_total"),
 			"Pulse per second count of stability limit exceeded events.",
 			nil, nil,
 		), prometheus.CounterValue},
-		tai: pusher.TypedDesc{prometheus.NewDesc(
+		tai: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "tai_offset_seconds"),
 			"International Atomic Time (TAI) offset.",
 			nil, nil,
 		), prometheus.GaugeValue},
-		syncStatus: pusher.TypedDesc{prometheus.NewDesc(
+		syncStatus: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "sync_status"),
 			"Is clock synchronized to a reliable server (1 = yes, 0 = no).",
 			nil, nil,

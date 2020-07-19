@@ -1,8 +1,8 @@
 package lotus
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"github.com/filecoin-project/go-jsonrpc"
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -20,7 +20,7 @@ func init() {
 	registerCollector("lotus-daemon", NewLotusDaemonCollector)
 }
 
-func NewLotusDaemonCollector(logger log.Logger) (pusher.Collector, error) {
+func NewLotusDaemonCollector(logger log.Logger) (gateway.Collector, error) {
 	client := &Client{}
 	closer, err := InitClient(client)
 	if err != nil {

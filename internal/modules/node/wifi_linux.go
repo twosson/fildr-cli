@@ -5,8 +5,8 @@ package node
 import (
 	"encoding/json"
 	"errors"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/mdlayher/wifi"
 	"github.com/prometheus/client_golang/prometheus"
@@ -52,7 +52,7 @@ type wifiStater interface {
 }
 
 // NewWifiCollector returns a new Collector exposing Wifi statistics.
-func NewWifiCollector(logger log.Logger) (pusher.Collector, error) {
+func NewWifiCollector(logger log.Logger) (gateway.Collector, error) {
 	const (
 		subsystem = "wifi"
 	)
@@ -155,11 +155,11 @@ func (c *wifiCollector) Update(ch chan<- prometheus.Metric) error {
 		// Cannot access wifi metrics, report no error.
 		if errors.Is(err, os.ErrNotExist) {
 			c.logger.Debugf("msg", "wifi collector metrics are not available for this system")
-			return pusher.ErrNoData
+			return gateway.ErrNoData
 		}
 		if errors.Is(err, os.ErrPermission) {
 			c.logger.Debugf("msg", "wifi collector got permission denied when accessing metrics")
-			return pusher.ErrNoData
+			return gateway.ErrNoData
 		}
 
 		return fmt.Errorf("failed to access wifi data: %w", err)

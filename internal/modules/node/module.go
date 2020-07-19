@@ -2,52 +2,29 @@ package node
 
 import (
 	"context"
-	"fildr-cli/internal/config"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
 	"fildr-cli/internal/module"
-	"fildr-cli/internal/pusher"
-	"time"
 )
 
 var _ module.Module = (*NodeCollectorModule)(nil)
 
 var (
 	namespace = "node"
-	factories = make(map[string]func(logger log.Logger) (pusher.Collector, error))
+	factories = make(map[string]func(logger log.Logger) (gateway.Collector, error))
 )
 
-func registerCollector(collector string, factory func(logger log.Logger) (pusher.Collector, error)) {
+func registerCollector(collector string, factory func(logger log.Logger) (gateway.Collector, error)) {
 	factories[collector] = factory
 }
 
 type NodeCollectorModule struct {
-	promInstance *pusher.PromInstance
-	logger       log.Logger
+	logger log.Logger
 }
 
 func New(ctx context.Context) (*NodeCollectorModule, error) {
 	logger := log.From(ctx)
-
-	fc, err := pusher.NewFildrCollector(ctx, namespace)
-	if err != nil {
-		return nil, err
-	}
-
-	for k, c := range factories {
-		collector, err := c(logger)
-		if err != nil {
-			logger.Warnf("collector %s is err: %v", k, err)
-			continue
-		}
-		fc.Registry(k, collector)
-	}
-
-	promInstance, err := pusher.GetPromInstance(ctx, namespace, fc)
-	if err != nil {
-		return nil, err
-	}
-
-	return &NodeCollectorModule{logger: logger, promInstance: promInstance}, nil
+	return &NodeCollectorModule{logger: logger}, nil
 }
 
 func (mod *NodeCollectorModule) Name() string {
@@ -56,24 +33,14 @@ func (mod *NodeCollectorModule) Name() string {
 
 func (mod *NodeCollectorModule) Start() error {
 	mod.logger.Infof("node collector starting ...")
-
-	cfg := config.Get()
-	eval := cfg.Gateway.Evaluation
-
-	go func() {
-		for range time.Tick(eval) {
-			metric, err := mod.promInstance.GetMetrics()
-			if err != nil {
-				mod.logger.Warnf("get metrics err: %v", err)
-				continue
-			}
-
-			if err = mod.promInstance.PushMetrics(metric); err != nil {
-				mod.logger.Warnf("push metrics err: %v", err)
-			}
+	for k, c := range factories {
+		collector, err := c(mod.logger)
+		if err != nil {
+			mod.logger.Warnf("collector %s is err: %v", k, err)
+			continue
 		}
-	}()
-
+		gateway.Registry("node", k, collector)
+	}
 	return nil
 }
 

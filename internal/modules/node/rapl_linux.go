@@ -3,8 +3,8 @@
 package node
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs/sysfs"
 	"strconv"
@@ -19,7 +19,7 @@ func init() {
 }
 
 // NewRaplCollector returns a new Collector exposing RAPL metrics.
-func NewRaplCollector(logger log.Logger) (pusher.Collector, error) {
+func NewRaplCollector(logger log.Logger) (gateway.Collector, error) {
 	fs, err := sysfs.NewFS(sysPath)
 
 	if err != nil {

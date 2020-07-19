@@ -4,8 +4,8 @@ package node
 
 import (
 	"encoding/json"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"github.com/ema/qdisc"
 	"github.com/prometheus/client_golang/prometheus"
 	"io/ioutil"
@@ -13,13 +13,13 @@ import (
 )
 
 type qdiscStatCollector struct {
-	bytes      pusher.TypedDesc
-	packets    pusher.TypedDesc
-	drops      pusher.TypedDesc
-	requeues   pusher.TypedDesc
-	overlimits pusher.TypedDesc
-	qlength    pusher.TypedDesc
-	backlog    pusher.TypedDesc
+	bytes      gateway.TypedDesc
+	packets    gateway.TypedDesc
+	drops      gateway.TypedDesc
+	requeues   gateway.TypedDesc
+	overlimits gateway.TypedDesc
+	qlength    gateway.TypedDesc
+	backlog    gateway.TypedDesc
 	logger     log.Logger
 }
 
@@ -32,39 +32,39 @@ func init() {
 }
 
 // NewQdiscStatCollector returns a new Collector exposing queuing discipline statistics.
-func NewQdiscStatCollector(logger log.Logger) (pusher.Collector, error) {
+func NewQdiscStatCollector(logger log.Logger) (gateway.Collector, error) {
 	return &qdiscStatCollector{
-		bytes: pusher.TypedDesc{prometheus.NewDesc(
+		bytes: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "bytes_total"),
 			"Number of bytes sent.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.CounterValue},
-		packets: pusher.TypedDesc{prometheus.NewDesc(
+		packets: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "packets_total"),
 			"Number of packets sent.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.CounterValue},
-		drops: pusher.TypedDesc{prometheus.NewDesc(
+		drops: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "drops_total"),
 			"Number of packets dropped.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.CounterValue},
-		requeues: pusher.TypedDesc{prometheus.NewDesc(
+		requeues: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "requeues_total"),
 			"Number of packets dequeued, not transmitted, and requeued.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.CounterValue},
-		overlimits: pusher.TypedDesc{prometheus.NewDesc(
+		overlimits: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "overlimits_total"),
 			"Number of overlimit packets.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.CounterValue},
-		qlength: pusher.TypedDesc{prometheus.NewDesc(
+		qlength: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "current_queue_length"),
 			"Number of packets currently in queue to be sent.",
 			[]string{"device", "kind"}, nil,
 		), prometheus.GaugeValue},
-		backlog: pusher.TypedDesc{prometheus.NewDesc(
+		backlog: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "qdisc", "backlog"),
 			"Number of bytes currently in queue to be sent.",
 			[]string{"device", "kind"}, nil,

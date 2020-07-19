@@ -4,8 +4,8 @@ package node
 
 import (
 	"errors"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io/ioutil"
@@ -15,7 +15,7 @@ import (
 )
 
 type bondingCollector struct {
-	slaves, active pusher.TypedDesc
+	slaves, active gateway.TypedDesc
 	logger         log.Logger
 }
 
@@ -25,14 +25,14 @@ func init() {
 
 // NewBondingCollector returns a newly allocated bondingCollector.
 // It exposes the number of configured and active slave of linux bonding interfaces.
-func NewBondingCollector(logger log.Logger) (pusher.Collector, error) {
+func NewBondingCollector(logger log.Logger) (gateway.Collector, error) {
 	return &bondingCollector{
-		slaves: pusher.TypedDesc{prometheus.NewDesc(
+		slaves: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "bonding", "slaves"),
 			"Number of configured slaves per bonding interface.",
 			[]string{"master"}, nil,
 		), prometheus.GaugeValue},
-		active: pusher.TypedDesc{prometheus.NewDesc(
+		active: gateway.TypedDesc{prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "bonding", "active"),
 			"Number of active slaves per bonding interface.",
 			[]string{"master"}, nil,
@@ -48,7 +48,7 @@ func (c *bondingCollector) Update(ch chan<- prometheus.Metric) error {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			c.logger.Debugf("msg", "Not collecting bonding, file does not exist", "file", statusfile)
-			return pusher.ErrNoData
+			return gateway.ErrNoData
 		}
 		return err
 	}

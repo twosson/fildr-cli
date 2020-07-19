@@ -4,8 +4,8 @@ package node
 
 import (
 	"errors"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/procfs"
@@ -28,7 +28,7 @@ func init() {
 }
 
 // NewSockStatCollector returns a new Collector exposing socket stats.
-func NewSockStatCollector(logger log.Logger) (pusher.Collector, error) {
+func NewSockStatCollector(logger log.Logger) (gateway.Collector, error) {
 	return &sockStatCollector{logger}, nil
 }
 

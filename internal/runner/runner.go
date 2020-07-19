@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"fildr-cli/internal/config"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
 	"fildr-cli/internal/module"
 	"fildr-cli/internal/modules/lotus"
@@ -47,6 +48,8 @@ func NewRunner(ctx context.Context, logger log.Logger, options Options) (*Runner
 			return nil, fmt.Errorf("loading module %s: %w", mod.Name(), err)
 		}
 	}
+
+	gateway.Run(ctx)
 
 	return &r, nil
 }

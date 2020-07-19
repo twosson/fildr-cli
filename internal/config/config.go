@@ -30,6 +30,14 @@ func LoadConfig() error {
 }
 
 func Get() Config {
+	if cfg.Gateway.Instance == "" {
+		hostname, err := os.Hostname()
+		if err != nil {
+			hostname = "unknown"
+		}
+		cfg.Gateway.Instance = hostname
+	}
+
 	return cfg
 }
 

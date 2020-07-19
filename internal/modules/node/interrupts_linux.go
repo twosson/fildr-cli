@@ -6,8 +6,8 @@ package node
 import (
 	"bufio"
 	"errors"
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"io"
@@ -21,7 +21,7 @@ var (
 )
 
 type interruptsCollector struct {
-	desc   pusher.TypedDesc
+	desc   gateway.TypedDesc
 	logger log.Logger
 }
 
@@ -30,9 +30,9 @@ func init() {
 }
 
 // NewInterruptsCollector returns a new Collector exposing interrupts stats.
-func NewInterruptsCollector(logger log.Logger) (pusher.Collector, error) {
+func NewInterruptsCollector(logger log.Logger) (gateway.Collector, error) {
 	return &interruptsCollector{
-		desc: pusher.TypedDesc{prometheus.NewDesc(
+		desc: gateway.TypedDesc{prometheus.NewDesc(
 			namespace+"_interrupts_total",
 			"Interrupt details.",
 			interruptLabelNames, nil,

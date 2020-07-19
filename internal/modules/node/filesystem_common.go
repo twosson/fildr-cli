@@ -4,8 +4,8 @@
 package node
 
 import (
+	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fildr-cli/internal/pusher"
 	"github.com/prometheus/client_golang/prometheus"
 	"regexp"
 )
@@ -48,7 +48,7 @@ func init() {
 }
 
 // NewFilesystemCollector returns a new Collector exposing filesystems stats.
-func NewFilesystemCollector(logger log.Logger) (pusher.Collector, error) {
+func NewFilesystemCollector(logger log.Logger) (gateway.Collector, error) {
 	subsystem := "filesystem"
 	logger.Infof("msg", "Parsed flag --collector.filesystem.ignored-mount-points", "flag", ignoredMountPoints)
 	mountPointPattern := regexp.MustCompile(ignoredMountPoints)

@@ -3,8 +3,10 @@ package lotus
 import (
 	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
+	"fmt"
 	"github.com/filecoin-project/go-jsonrpc"
 	"github.com/prometheus/client_golang/prometheus"
+	"strings"
 )
 
 type lotusDaemonCollector struct {
@@ -37,7 +39,7 @@ func NewLotusDaemonCollector(logger log.Logger) (gateway.Collector, error) {
 	peersAddr := prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, "daemon", "paddr"),
 		"lotus daemon peers addr.",
-		[]string{"id", "addr"},
+		[]string{"id", "ip", "port"},
 		nil,
 	)
 
@@ -83,13 +85,22 @@ func (lc *lotusDaemonCollector) Update(ch chan<- prometheus.Metric) error {
 
 	if len(ps) > 0 && len(sc) > 0 {
 		for i := range ps {
-			ch <- prometheus.MustNewConstMetric(
-				lc.peersAddr,
-				prometheus.GaugeValue,
-				scm[ps[i].ID.String()],
-				ps[i].ID.String(),
-				ps[i].Addrs[0].String(),
-			)
+
+			addrs := ps[i].Addrs[0]
+			if addrs != nil {
+				addrsArr := strings.Split(addrs.String(), "/")
+
+				fmt.Println(addrsArr[2])
+				fmt.Println(addrsArr[4])
+				ch <- prometheus.MustNewConstMetric(
+					lc.peersAddr,
+					prometheus.GaugeValue,
+					scm[ps[i].ID.String()],
+					ps[i].ID.String(),
+					addrsArr[2],
+					addrsArr[4],
+				)
+			}
 		}
 	} else {
 		ch <- prometheus.MustNewConstMetric(

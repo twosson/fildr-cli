@@ -15,29 +15,61 @@ FILdr Client 可用独立运行，后端服务器(可选)可自行开发以及�
 
 ## 安装使用
 
+### 源码编译
+
 ```
+# 下载源码
 git clone https://github.com/twosson/fildr-cli.git
+
+# 进入程序目录
 cd fildr-cli
+
+# 设置go代理
+export GOPROXY=https://goproxy.cn
+
+# linux 下使用以下该命令编译可执行文件
 go run build.go build
 
-# 可执行二进制文件生成在./build/目录下，可拷贝到任意位置运行
-cd build
-# 初始化应用程序，会在用户HOME目录生成 .fildr/config.toml 配置文件
-./fildr-cli init
+# macos 下使用以下命令编译可执行文件
+go run build.go build-linux
 
-cat ~/.fildr/config.toml
-
-[gateway]
-url = "https://api.fildr.com/fildr-miner"
-token = ""
-instance = "" 
-evaluation = 5
+# 最后可执行文件生成在 build 目录下
 ```
 
-> 按照自己情况配置以下参数，通常只需要修改token就可以正常使用了
-> - instance: 留空的话，会自动使用主机的hostname.
-> - token: 是身份验证授权，请在管理后台获取.
-> - evaluation: 指标评估间隔时间，单位为秒
+### 初始化程序
+
+```
+./build/fildr-cli init --gateway.token="eyJhbGciOiJIUzI1NiIsI"
+```
+
+> 初始化程序将生成程序配置文件在当前用户HOME目录下面的.fildr目录下面。
+> - 上面的gateway.token 请在https://console.fildr.com 获取。
+
+__配置文件 ~/.fildr/config.toml__
+
+```
+[gateway]
+  evaluation = "5s"
+  instance = ""
+  token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpX"
+  url = "https://api.fildr.com/fildr-miner"
+
+[lotus]
+
+  [lotus.daemon]
+    enable = false
+    ip = "127.0.0.1"
+    port = 1234
+```
+
+> 如果你想捕获lotus daemon 指标信息，请修改lotus.daemon下面的enable = true
+
+### 启动程序
+
+```
+nohup ./build/fildr-cli &
+```
+
 
 ## 开发
 

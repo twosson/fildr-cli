@@ -72,6 +72,13 @@ func main() {
 			},
 		},
 		&cobra.Command{
+			Use:   "build-linux",
+			Short: "server build, skipping tests",
+			Run: func(cmd *cobra.Command, args []string) {
+				buildLinux()
+			},
+		},
+		&cobra.Command{
 			Use:   "release",
 			Short: "tag and push a release",
 			Run: func(cmd *cobra.Command, args []string) {
@@ -178,6 +185,21 @@ func build() {
 		artifact = "fildr-cli.exe"
 	}
 	runCmd("go", nil, "build", "-o", "build/"+artifact, GO_FLAGS, "-v", "./cmd/fildr")
+}
+
+func buildLinux() {
+	newPath := filepath.Join(".", "build")
+	os.MkdirAll(newPath, 0755)
+
+	artifact := "fildr-cli"
+	if runtime.GOOS == "windows" {
+		artifact = "fildr-cli.exe"
+	}
+	env := make(map[string]string)
+	env["CGO_ENABLED"] = "0"
+	env["GOOS"] = "linux"
+	env["GOARCH"] = "amd64"
+	runCmd("go", env, "build", "-o", "build/"+artifact, GO_FLAGS, "-v", "./cmd/fildr")
 }
 
 func removeFakes() {

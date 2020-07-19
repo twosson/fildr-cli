@@ -70,6 +70,29 @@ __配置文件 ~/.fildr/config.toml__
 nohup ./build/fildr-cli &
 ```
 
+## 在线管理系统操作指南
+
+### 登录https://console.fildr.com
+
+![](https://s1.ax1x.com/2020/07/19/UfFojS.png)
+
+### 开通服务
+
+![](https://s1.ax1x.com/2020/07/19/UfApGt.png)
+
+### 获取令牌
+
+![](https://s1.ax1x.com/2020/07/19/UfAQMT.png)
+
+> 开通服务后，这里会出现获取令牌
+
+![](https://s1.ax1x.com/2020/07/19/UfAGdJ.png)
+
+> 获取令牌属于安全操作，需要再次获取密码
+
+![](https://s1.ax1x.com/2020/07/19/UfA0sO.png)
+
+> 密码输入正确后，会返回token，然后点击复制，最后粘贴到你的fildr-cli客户端配置文件里面即可
 
 ## 开发
 

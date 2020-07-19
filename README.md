@@ -30,13 +30,14 @@ cat ~/.fildr/config.toml
 [gateway]
 url = "https://api.fildr.com/fildr-miner"
 token = ""
-instance = ""
+instance = "" 
 evaluation = 5
 ```
 
-> instance: 留空的话，会自动使用主机的hostname.
-> token: 是身份验证授权，请在管理后台获取.
-> evaluation: 指标评估间隔时间，单位为秒
+> 按照自己情况配置以下参数，通常只需要修改token就可以正常使用了
+> - instance: 留空的话，会自动使用主机的hostname.
+> - token: 是身份验证授权，请在管理后台获取.
+> - evaluation: 指标评估间隔时间，单位为秒
 
 ## 开发
 

@@ -3,7 +3,6 @@ package lotus
 import (
 	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
-	"fmt"
 	"github.com/filecoin-project/go-jsonrpc"
 	"github.com/prometheus/client_golang/prometheus"
 	"strings"
@@ -90,8 +89,6 @@ func (lc *lotusDaemonCollector) Update(ch chan<- prometheus.Metric) error {
 			if addrs != nil {
 				addrsArr := strings.Split(addrs.String(), "/")
 
-				fmt.Println(addrsArr[2])
-				fmt.Println(addrsArr[4])
 				ch <- prometheus.MustNewConstMetric(
 					lc.peersAddr,
 					prometheus.GaugeValue,

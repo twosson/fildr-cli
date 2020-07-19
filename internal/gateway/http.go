@@ -42,14 +42,14 @@ func postGateway(data *MetricData) {
 	req.Header.Add("blade-auth", "Bearer "+cfg.Gateway.Token)
 	req.Header.Add("Content-Type", "text/plain")
 	resp, err := httpClient.Do(req)
+	if err != nil {
+		logger.Warnf("push gateway err: %v", err)
+		return
+	}
 	if resp.StatusCode != http.StatusOK {
 		if resp.StatusCode == http.StatusUnauthorized {
 			logger.Warnf("%d push gateway unauthorized.", resp.StatusCode)
 		}
-	}
-	if err != nil {
-		logger.Warnf("push gateway err: %v", err)
-		return
 	}
 	io.Copy(ioutil.Discard, resp.Body)
 	resp.Body.Close()

@@ -94,6 +94,14 @@ nohup ./build/fildr-cli &
 
 > 密码输入正确后，会返回token，然后点击复制，最后粘贴到你的fildr-cli客户端配置文件里面即可
 
+### 查看资源汇总指标
+
+![](https://s1.ax1x.com/2020/07/19/UfEMtA.png)
+
+### 查看资源明细指标
+
+![](https://s1.ax1x.com/2020/07/19/UfEGX8.png)
+
 ## 开发
 
 ### 目录结构

@@ -6,8 +6,11 @@ require (
 	github.com/beevik/ntp v0.2.0
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
 	github.com/ema/qdisc v0.0.0-20200603082823-62d0308e3e00
+	github.com/filecoin-project/go-address v0.0.2-0.20200504173055-8b6f2fb2b3ef
 	github.com/filecoin-project/go-jsonrpc v0.1.1-0.20200602181149-522144ab4e24
 	github.com/filecoin-project/lotus v0.4.1
+	github.com/filecoin-project/sector-storage v0.0.0-20200630180318-4c1968f62a8f
+	github.com/filecoin-project/specs-actors v0.6.2-0.20200702170846-2cd72643a5cf
 	github.com/godbus/dbus v0.0.0-20190402143921-271e53dc4968
 	github.com/hodgesds/perf-utils v0.0.8
 	github.com/libp2p/go-libp2p-core v0.6.0
@@ -23,6 +26,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.4.0
 	github.com/stretchr/testify v1.6.1
+	github.com/zpatrick/go-bytesize v0.0.0-20170214182126-40b68ac70b6a
 	go.uber.org/zap v1.15.0
 	golang.org/x/sys v0.0.0-20200615200032-f1bc736245b1
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6

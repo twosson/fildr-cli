@@ -32,6 +32,7 @@ func (mod *LotusCollectorModule) Name() string {
 }
 
 func (mod *LotusCollectorModule) Start() error {
+	mod.logger.Infof("lotus collector starting ...")
 	for k, c := range factories {
 		collector, err := c(mod.logger)
 		if err != nil {

@@ -67,5 +67,8 @@ func InitializationConfig() error {
 	viper.Set("lotus.daemon.ip", "127.0.0.1")
 	viper.Set("lotus.daemon.port", 1234)
 
+	viper.Set("lotus.miner.enable", false)
+	viper.Set("lotus.miner.path", "")
+
 	return viper.WriteConfig()
 }

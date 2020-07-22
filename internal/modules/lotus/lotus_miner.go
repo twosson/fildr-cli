@@ -43,6 +43,8 @@ func NewLotusMinerCollector(logger log.Logger) (gateway.Collector, error) {
 
 	lmc := &lotusMinerCollector{logger: logger}
 
+	logger.Infof("nit miner collector")
+
 	lmc.infoIsCanWonBlocks = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, "miner", "canwonblocks"),
 		"lotus miner info is can won blocks.",
@@ -155,9 +157,14 @@ func (lc *lotusMinerCollector) Update(ch chan<- prometheus.Metric) error {
 
 	cfg := config.Get()
 
+	lc.logger.Infof("miner collector update...")
+
 	if !cfg.Lotus.Miner.Enable {
+		lc.logger.Infof("miner collector update close ...")
 		return nil
 	}
+
+	lc.logger.Infof("miner collector update open ...")
 
 	out, err := exec.Command(cfg.Lotus.Miner.Path, "version").Output()
 

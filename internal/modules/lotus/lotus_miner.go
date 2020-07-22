@@ -174,6 +174,7 @@ func (lc *lotusMinerCollector) Update(ch chan<- prometheus.Metric) error {
 	}
 
 	outStr := string(out)
+	lc.logger.Infof("out: %s", outStr)
 	if len(outStr) < 10 {
 		return gateway.ErrNoData
 	}
@@ -208,6 +209,7 @@ func (lc *lotusMinerCollector) Update(ch chan<- prometheus.Metric) error {
 		return err
 	}
 	outStr = string(out)
+	lc.logger.Infof("out: %s", outStr)
 	if len(outStr) < 10 {
 		return gateway.ErrNoData
 	}
@@ -873,6 +875,7 @@ func (lc *lotusMinerCollector) Update(ch chan<- prometheus.Metric) error {
 		return err
 	}
 	outStr = string(out)
+	lc.logger.Infof("out: %s", outStr)
 	if len(outStr) < 10 {
 		return gateway.ErrNoData
 	}

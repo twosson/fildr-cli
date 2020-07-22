@@ -67,7 +67,7 @@ func NewLotusMinerCollector(logger log.Logger) (gateway.Collector, error) {
 	lmc.infoBytePower = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, "miner", "bytepower"),
 		"lotus miner info byte power.",
-		[]string{"miner", "actor", "daemonVersion", "minerVersion"},
+		[]string{"miner", "daemonVersion", "minerVersion", "actor"},
 		nil,
 	)
 

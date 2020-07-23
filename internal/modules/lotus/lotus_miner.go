@@ -26,6 +26,7 @@ type lotusMinerCollector struct {
 	infoSectorStat    *prometheus.Desc
 
 	// Worker
+	workerCounts   *prometheus.Desc
 	workerCpuUse   *prometheus.Desc
 	workerRam      *prometheus.Desc
 	workerVmem     *prometheus.Desc
@@ -137,6 +138,13 @@ func NewLotusMinerCollector(logger log.Logger) (gateway.Collector, error) {
 		prometheus.BuildFQName(namespace, "miner", "workergpu"),
 		"lotus miner workers list vmem",
 		[]string{"miner", "daemonVersion", "minerVersion", "hostname", "workerId", "gpuModel"},
+		nil,
+	)
+
+	lmc.workerCounts = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "miner", "workercounts"),
+		"lotus miner workers counts",
+		[]string{"miner", "daemonVersion", "minerVersion"},
 		nil,
 	)
 
@@ -927,10 +935,13 @@ func (lc *lotusMinerCollector) Update(ch chan<- prometheus.Metric) error {
 
 	workers := strings.Split(outStr, "Worker ")
 
+	var workerCounts float64 = 0
+
 	for _, worker := range workers {
 		if len(worker) < 10 {
 			continue
 		}
+		workerCounts++
 		lines := strings.Split(worker, "\n")
 		var workerId string
 		var workerHostname string
@@ -1102,6 +1113,16 @@ func (lc *lotusMinerCollector) Update(ch chan<- prometheus.Metric) error {
 			}
 		}
 	}
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.workerCounts,
+		prometheus.GaugeValue,
+		workerCounts,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+	)
+
 	return nil
 }
 

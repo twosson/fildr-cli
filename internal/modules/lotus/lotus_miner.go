@@ -14,17 +14,16 @@ import (
 type lotusMinerCollector struct {
 
 	// Info
-	infoIsCanWonBlocks *prometheus.Desc
-	infoWinRate        *prometheus.Desc
-	infoSectorSize     *prometheus.Desc
-	infoBytePower      *prometheus.Desc
-	infoActualPower    *prometheus.Desc
-	infoCommitted      *prometheus.Desc
-	infoProving        *prometheus.Desc
-	infoMinerBalance   *prometheus.Desc
-	infoWorkerBalance  *prometheus.Desc
-	infoMarket         *prometheus.Desc
-	infoSectorStat     *prometheus.Desc
+	infoWinRate       *prometheus.Desc
+	infoSectorSize    *prometheus.Desc
+	infoBytePower     *prometheus.Desc
+	infoActualPower   *prometheus.Desc
+	infoCommitted     *prometheus.Desc
+	infoProving       *prometheus.Desc
+	infoMinerBalance  *prometheus.Desc
+	infoWorkerBalance *prometheus.Desc
+	infoMarket        *prometheus.Desc
+	infoSectorStat    *prometheus.Desc
 
 	// Worker
 	workerCpuUse   *prometheus.Desc
@@ -42,13 +41,6 @@ func init() {
 func NewLotusMinerCollector(logger log.Logger) (gateway.Collector, error) {
 
 	lmc := &lotusMinerCollector{logger: logger}
-
-	lmc.infoIsCanWonBlocks = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace, "miner", "canwonblocks"),
-		"lotus miner info is can won blocks.",
-		[]string{"miner", "daemonVersion", "minerVersion"},
-		nil,
-	)
 
 	lmc.infoWinRate = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, "miner", "winrate"),
@@ -209,21 +201,41 @@ func (lc *lotusMinerCollector) Update(ch chan<- prometheus.Metric) error {
 
 	var minerNumber string
 
+	var (
+		winRate float64 = 0
+
+		sectorsTotal   float64 = 0
+		sectorsProving float64 = 0
+
+		sectorsUndefinedSectorState float64 = 0
+		sectorsEmpty                float64 = 0
+		sectorsPacking              float64 = 0
+		sectorsPreCommit1           float64 = 0
+		sectorsPreCommit2           float64 = 0
+		sectorsPreCommitting        float64 = 0
+		sectorsPreCommitWait        float64 = 0
+		sectorsWaitSeed             float64 = 0
+		sectorsCommitting           float64 = 0
+		sectorsCommitWait           float64 = 0
+		sectorsFinalizeSector       float64 = 0
+
+		sectorsFailedUnrecoverable  float64 = 0
+		sectorsSealPreCommit1Failed float64 = 0
+		sectorsSealPreCommit2Failed float64 = 0
+		sectorsPreCommitFailed      float64 = 0
+		sectorsComputeProofFailed   float64 = 0
+		sectorsCommitFailed         float64 = 0
+		sectorsPackingFailed        float64 = 0
+		sectorsFinalizeFailed       float64 = 0
+		sectorsFaulty               float64 = 0
+		sectorsFaultReported        float64 = 0
+		sectorsFaultedFinal         float64 = 0
+	)
+
 	for _, line := range lines {
 		row := strings.Split(line, ":")
 		colNum := len(row)
-		if colNum == 1 {
-			if strings.EqualFold(line, "Below minimum power threshold, no blocks will be won") {
-				ch <- prometheus.MustNewConstMetric(
-					lc.infoIsCanWonBlocks,
-					prometheus.GaugeValue,
-					0,
-					minerNumber,
-					daemonVersion,
-					minerVersion,
-				)
-			}
-		} else if colNum == 2 {
+		if colNum == 2 {
 			label := row[0]
 			label = strings.TrimSpace(label)
 			value := row[1]
@@ -237,30 +249,15 @@ func (lc *lotusMinerCollector) Update(ch chan<- prometheus.Metric) error {
 			case "Miner":
 				minerNumber = value
 			case "Expected block win rate":
-				ch <- prometheus.MustNewConstMetric(
-					lc.infoIsCanWonBlocks,
-					prometheus.GaugeValue,
-					1,
-					minerNumber,
-					daemonVersion,
-					minerVersion,
-				)
-
 				subs := strings.Split(value, "/")
 				if len(subs) > 1 {
 					value = subs[0]
 					result, err := strconv.ParseFloat(value, 64)
 					if err != nil {
 						lc.logger.Warnf("get lotus miner info win rate err: %v", err)
+					} else {
+						winRate = result
 					}
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoWinRate,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-					)
 				}
 			case "Sector Size":
 				ch <- prometheus.MustNewConstMetric(
@@ -478,388 +475,445 @@ func (lc *lotusMinerCollector) Update(ch chan<- prometheus.Metric) error {
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector total err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"Total",
-						"green",
-					)
+					sectorsTotal = result
 				}
 			case "Proving":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector proving err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"Proving",
-						"green",
-					)
+					sectorsProving = result
 				}
 			case "UndefinedSectorState":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector undefined sector state err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"UndefinedSectorState",
-						"red",
-					)
+					sectorsUndefinedSectorState = result
 				}
 			case "Empty":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector empty err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"Empty",
-						"yellow",
-					)
+					sectorsEmpty = result
 				}
 			case "Packing":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector packing err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"Packing",
-						"yellow",
-					)
+					sectorsPacking = result
 				}
 			case "PreCommit1":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector pre commit1 err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"PreCommit1",
-						"yellow",
-					)
+					sectorsPreCommit1 = result
 				}
 			case "PreCommit2":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector pre commit2 err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"PreCommit2",
-						"yellow",
-					)
+					sectorsPreCommit2 = result
 				}
 			case "PreCommitting":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector pre committing err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"PreCommitting",
-						"yellow",
-					)
+					sectorsPreCommitting = result
 				}
 			case "PreCommitWait":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector pre commit wait err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"PreCommitWait",
-						"yellow",
-					)
+					sectorsPreCommitWait = result
 				}
 			case "WaitSeed":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector wait seed err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"WaitSeed",
-						"yellow",
-					)
+					sectorsWaitSeed = result
 				}
 			case "Committing":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector committing err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"Committing",
-						"yellow",
-					)
+					sectorsCommitting = result
 				}
 			case "CommitWait":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector commit wait err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"CommitWait",
-						"yellow",
-					)
+					sectorsCommitWait = result
 				}
 			case "FinalizeSector":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector finalize sector err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"FinalizeSector",
-						"yellow",
-					)
+					sectorsFinalizeSector = result
 				}
 			case "FailedUnrecoverable":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector failed unrecoverable err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"FailedUnrecoverable",
-						"red",
-					)
+					sectorsFailedUnrecoverable = result
 				}
 			case "SealPreCommit1Failed":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector seal pre commit1 failed err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"SealPreCommit1Failed",
-						"red",
-					)
+					sectorsSealPreCommit1Failed = result
 				}
 			case "SealPreCommit2Failed":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector seal pre commit2 failed err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"SealPreCommit2Failed",
-						"red",
-					)
+					sectorsSealPreCommit2Failed = result
 				}
 			case "PreCommitFailed":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector pre commit failed err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"PreCommitFailed",
-						"red",
-					)
+					sectorsPreCommitFailed = result
 				}
 			case "ComputeProofFailed":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector compute proof failed err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"ComputeProofFailed",
-						"red",
-					)
+					sectorsComputeProofFailed = result
 				}
 			case "CommitFailed":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector commit failed err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"CommitFailed",
-						"red",
-					)
+					sectorsCommitFailed = result
 				}
 			case "PackingFailed":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector packing failed err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"PackingFailed",
-						"red",
-					)
+					sectorsPackingFailed = result
 				}
 			case "FinalizeFailed":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector finalize failed err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"FinalizeFailed",
-						"red",
-					)
+					sectorsFinalizeFailed = result
 				}
 			case "Faulty":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector faulty err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"Faulty",
-						"red",
-					)
+					sectorsFaulty = result
 				}
 			case "FaultReported":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector fault reported err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"FaultReported",
-						"red",
-					)
+					sectorsFaultReported = result
 				}
 			case "FaultedFinal":
 				result, err := strconv.ParseFloat(value, 64)
 				if err != nil {
 					lc.logger.Warnf("get lotus miner info sector fault final err: %v", err)
 				} else {
-					ch <- prometheus.MustNewConstMetric(
-						lc.infoSectorStat,
-						prometheus.GaugeValue,
-						result,
-						minerNumber,
-						daemonVersion,
-						minerVersion,
-						"FaultedFinal",
-						"red",
-					)
+					sectorsFaultedFinal = result
 				}
 			}
 		}
 	}
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoWinRate,
+		prometheus.GaugeValue,
+		winRate,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsTotal,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"Total",
+		"green",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsProving,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"Proving",
+		"green",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsUndefinedSectorState,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"UndefinedSectorState",
+		"red",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsEmpty,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"Empty",
+		"yellow",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsPacking,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"Packing",
+		"yellow",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsPreCommit1,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"PreCommit1",
+		"yellow",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsPreCommit2,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"PreCommit2",
+		"yellow",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsPreCommitting,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"PreCommitting",
+		"yellow",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsPreCommitWait,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"PreCommitWait",
+		"yellow",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsWaitSeed,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"WaitSeed",
+		"yellow",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsCommitting,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"Committing",
+		"yellow",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsCommitWait,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"CommitWait",
+		"yellow",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsFinalizeSector,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"FinalizeSector",
+		"yellow",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsFailedUnrecoverable,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"FailedUnrecoverable",
+		"red",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsSealPreCommit1Failed,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"SealPreCommit1Failed",
+		"red",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsSealPreCommit2Failed,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"SealPreCommit2Failed",
+		"red",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsPreCommitFailed,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"PreCommitFailed",
+		"red",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsComputeProofFailed,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"ComputeProofFailed",
+		"red",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsCommitFailed,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"CommitFailed",
+		"red",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsPackingFailed,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"PackingFailed",
+		"red",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsFinalizeFailed,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"FinalizeFailed",
+		"red",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsFaulty,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"Faulty",
+		"red",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsFaultReported,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"FaultReported",
+		"red",
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		lc.infoSectorStat,
+		prometheus.GaugeValue,
+		sectorsFaultedFinal,
+		minerNumber,
+		daemonVersion,
+		minerVersion,
+		"FaultedFinal",
+		"red",
+	)
 
 	out, err = exec.Command(cfg.Lotus.Miner.Path, "workers", "list").Output()
 	if err != nil {

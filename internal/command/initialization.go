@@ -36,5 +36,9 @@ func newInitializationCmd() *cobra.Command {
 	initializationCmd.Flags().DurationP("gateway.evaluation", "", time.Second*5, "config gateway evaluation")
 	initializationCmd.Flags().StringP("gateway.url", "", "https://api.fildr.com/fildr-miner", "config gateway url")
 
+	initializationCmd.Flags().BoolP("lotus.daemon.enable", "", false, "enable lotus daemon")
+	initializationCmd.Flags().StringP("lotus.daemon.listen-address", "", "127.0.0.1:1234", "enable lotus daemon")
+	initializationCmd.Flags().StringP("lotus.daemon.token", "", "", "lotus daemon token")
+
 	return initializationCmd
 }

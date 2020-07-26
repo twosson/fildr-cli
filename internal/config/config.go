@@ -64,8 +64,8 @@ func InitializationConfig() error {
 	viper.Set("gateway.evaluation", viper.GetDuration("gateway.evaluation"))
 
 	viper.Set("lotus.daemon.enable", false)
-	viper.Set("lotus.daemon.ip", "127.0.0.1")
-	viper.Set("lotus.daemon.port", 1234)
+	viper.Set("lotus.daemon.listen-address", "127.0.0.1:1234")
+	viper.Set("lotus.daemon.token", "")
 
 	viper.Set("lotus.miner.enable", false)
 	viper.Set("lotus.miner.path", "")

@@ -1,10 +1,72 @@
 package lotus
 
 import (
+	"context"
+	"fmt"
+	"github.com/filecoin-project/go-jsonrpc/auth"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
+func TestMinerConn(t *testing.T) {
+	lotusApi := &LotusApi{}
+	lotusClient := &LotusClient{}
+	err := lotusClient.WithCommonClient(context.Background(), lotusApi, "33s06815j0.qicp.vip:2345", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.nprGvXwmDWPu3SzeYTsObLu75gmZ4a-LE-LHl4ysHjM")
+	assert.NoError(t, err)
+	lotusClient.Shutdown()
+}
+
+func TestDaemonConn(t *testing.T) {
+	lotusApi := &LotusApi{}
+	lotusClient := &LotusClient{}
+	err := lotusClient.WithCommonClient(context.Background(), lotusApi, "127.0.0.1:1234", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.VkP-gk6FOIcFIFOY4cifk_sn-N5_OqUJo2s7mWnzcfE")
+	assert.NoError(t, err)
+	lotusClient.Shutdown()
+}
+
+func TestAuthVerify(t *testing.T) {
+	lotusApi := &LotusApi{}
+	lotusClient := &LotusClient{}
+	err := lotusClient.WithCommonClient(context.Background(), lotusApi, "127.0.0.1:1234", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.VkP-gk6FOIcFIFOY4cifk_sn-N5_OqUJo2s7mWnzcfE")
+	assert.NoError(t, err)
+	permissions, err := lotusApi.AuthVerify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.VkP-gk6FOIcFIFOY4cifk_sn-N5_OqUJo2s7mWnzcfE")
+	assert.NoError(t, err)
+	assert.EqualValues(t, []auth.Permission{"read", "write", "sign", "admin"}, permissions)
+	lotusClient.Shutdown()
+}
+
+func TestNetPeers(t *testing.T) {
+	lotusApi := &LotusApi{}
+	lotusClient := &LotusClient{}
+	err := lotusClient.WithCommonClient(context.Background(), lotusApi, "127.0.0.1:1234", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.VkP-gk6FOIcFIFOY4cifk_sn-N5_OqUJo2s7mWnzcfE")
+	assert.NoError(t, err)
+	peers, err := lotusApi.NetPeers()
+	assert.NoError(t, err)
+	for _, peer := range peers {
+		fmt.Println(peer)
+	}
+	lotusClient.Shutdown()
+
+}
+
 func TestClient(t *testing.T) {
+
+	lotusApi := &LotusApi{}
+	lotusClient := &LotusClient{}
+	err := lotusClient.WithCommonClient(context.Background(), lotusApi, "127.0.0.1:1234", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.VkP-gk6FOIcFIFOY4cifk_sn-N5_OqUJo2s7mWnzcfE")
+	assert.NoError(t, err)
+
+	state, err := lotusApi.SyncState()
+	assert.NoError(t, err)
+	for _, sync := range state.ActiveSyncs {
+		fmt.Println(sync.Base.Key().String())
+		fmt.Println(sync.Target.Key().String())
+		fmt.Println(sync.Stage)
+		fmt.Println(sync.Height)
+		fmt.Println(sync.End)
+		fmt.Println(sync.Target.Height() - sync.Height)
+	}
+
 	//client := &Client{}
 	//requestHeader := http.Header{}
 	//requestHeader.Add("Content-Type", "application/json")

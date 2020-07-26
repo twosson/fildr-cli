@@ -1,29 +1,23 @@
 package lotus
 
 import (
+	"context"
 	"fildr-cli/internal/config"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-jsonrpc"
+	"github.com/filecoin-project/go-jsonrpc/auth"
 	"github.com/filecoin-project/lotus/api"
-	"github.com/filecoin-project/lotus/chain/types"
-	"github.com/filecoin-project/sector-storage/stores"
-	"github.com/filecoin-project/sector-storage/storiface"
-	"github.com/filecoin-project/specs-actors/actors/abi"
 	"github.com/libp2p/go-libp2p-core/network"
 	"github.com/libp2p/go-libp2p-core/peer"
 	"net/http"
-	"strconv"
 )
 
-type Client struct {
-	ID      func() (peer.ID, error)
-	Version func() (api.Version, error)
-	LogList func() ([]string, error)
+type LotusApi struct {
+	// MethodGroup: Auth
+	AuthVerify func(token string) ([]auth.Permission, error)
+	AuthNew    func(perms []auth.Permission) ([]byte, error)
 
-	// Full
-	MpoolSub func() (<-chan api.MpoolUpdate, error)
-
-	// Common
+	// MethodGroup: Net
 	NetConnectedness func(peer.ID) (network.Connectedness, error)
 	NetPeers         func() ([]peer.AddrInfo, error)
 	NetConnect       func(peer.AddrInfo) error
@@ -31,30 +25,80 @@ type Client struct {
 	NetDisconnect    func(peer.ID) error
 	NetFindPeer      func(peer.ID) (peer.AddrInfo, error)
 	NetPubsubScores  func() ([]api.PubsubScore, error)
-	LogSetLevel      func(string, string) error
+
+	// MethodGroup: Common
+
+	// ID returns peerID of libp2p node backing this API
+	ID func() (peer.ID, error)
+	// Version provides information about API provider
+	Version func() (api.Version, error)
+
+	LogList     func() ([]string, error)
+	LogSetLevel func(string, string) error
+
+	// trigger graceful shutdown
+	Shutdown func() error
+	Closing  func(context.Context) (<-chan struct{}, error)
+
+	SyncState func() (*api.SyncState, error)
 
 	// Miner
-	ActorAddress    func() (address.Address, error)
-	ActorSectorSize func(address.Address) (abi.SectorSize, error)
-	MiningBase      func() (*types.TipSet, error)
-	PledgeSector    func() error
-	SectorsStatus   func() (api.SectorInfo, error)
-	SectorsList     func() ([]abi.SectorNumber, error)
-	SectorsRefs     func() (map[string][]api.SealedRef, error)
-	SectorsUpdate   func(abi.SectorNumber, api.SectorState) error
-	SectorRemove    func(abi.SectorNumber) error
-	StorageList     func() (map[stores.ID][]stores.Decl, error)
-	StorageLocal    func() (map[stores.ID]string, error)
-	StorageStat     func(stores.ID) (stores.FsStat, error)
-	WorkerConnect   func(string) error
-	WorkerStats     func() (map[uint64]storiface.WorkerStats, error)
+	ActorAddress func() (address.Address, error)
 }
 
-func InitClient(client *Client) (jsonrpc.ClientCloser, error) {
+type LotusClient struct {
+	shutdown func()
+}
+
+func (c *LotusClient) WithCommonClient(ctx context.Context, lotusApi *LotusApi, listenAddress string, token string) error {
+	c.Shutdown()
+	requestHeader := http.Header{}
+	requestHeader.Add("Content-Type", "application/json")
+	if token != "" {
+		requestHeader.Add("Authorization", "Bearer "+token)
+	}
+	closer, err := jsonrpc.NewClient("ws://"+listenAddress+"/rpc/v0", "Filecoin", lotusApi, requestHeader)
+	if err != nil {
+		return err
+	}
+	c.shutdown = closer
+	return nil
+}
+
+func (c *LotusClient) WithMinerClient(lotusApi *LotusApi) error {
+	c.Shutdown()
 	cfg := config.Get()
 	requestHeader := http.Header{}
 	requestHeader.Add("Content-Type", "application/json")
-	ip := cfg.Lotus.Daemon.Ip
-	port := cfg.Lotus.Daemon.Port
-	return jsonrpc.NewClient("ws://"+ip+":"+strconv.Itoa(port)+"/rpc/v0", "Filecoin", client, requestHeader)
+	requestHeader.Add("Authorization", "Bearer "+cfg.Lotus.Miner.Token)
+	closer, err := jsonrpc.NewClient("ws://"+cfg.Lotus.Miner.ListenAddress+"/rpc/v0", "Filecoin", lotusApi, requestHeader)
+	if err != nil {
+		return err
+	}
+	c.shutdown = closer
+	return nil
+}
+
+func (c *LotusClient) WithDaemonClient(lotusApi *LotusApi) error {
+	c.Shutdown()
+	cfg := config.Get()
+	requestHeader := http.Header{}
+	requestHeader.Add("Content-Type", "application/json")
+	token := cfg.Lotus.Daemon.Token
+	if len(token) > 10 {
+		requestHeader.Add("Authorization", "Bearer "+token)
+	}
+
+	closer, err := jsonrpc.NewClient("ws://"+cfg.Lotus.Daemon.ListenAddress+"/rpc/v0", "Filecoin", lotusApi, requestHeader)
+	if err != nil {
+		return err
+	}
+	c.shutdown = closer
+	return nil
+}
+
+func (c *LotusClient) Shutdown() {
+	if c.shutdown != nil {
+		c.shutdown()
+	}
 }

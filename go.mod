@@ -8,14 +8,15 @@ require (
 	github.com/ema/qdisc v0.0.0-20200603082823-62d0308e3e00
 	github.com/filecoin-project/go-address v0.0.2-0.20200504173055-8b6f2fb2b3ef
 	github.com/filecoin-project/go-jsonrpc v0.1.1-0.20200602181149-522144ab4e24
-	github.com/filecoin-project/lotus v0.4.1
-	github.com/filecoin-project/sector-storage v0.0.0-20200630180318-4c1968f62a8f
-	github.com/filecoin-project/specs-actors v0.6.2-0.20200702170846-2cd72643a5cf
+	github.com/filecoin-project/lotus v0.4.2
+	github.com/filecoin-project/sector-storage v0.0.0-20200723200950-ed2e57dde6df
+	github.com/filecoin-project/specs-actors v0.8.1-0.20200724015154-3c690d9b7e1d
 	github.com/godbus/dbus v0.0.0-20190402143921-271e53dc4968
 	github.com/hodgesds/perf-utils v0.0.8
 	github.com/libp2p/go-libp2p-core v0.6.0
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/mdlayher/wifi v0.0.0-20190303161829-b1436901ddee
+	github.com/multiformats/go-multiaddr v0.2.2
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.7.1
 	github.com/prometheus/client_model v0.2.0

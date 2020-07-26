@@ -1,0 +1,84 @@
+(pprof) top 20
+Showing nodes accounting for 290ms, 100% of 290ms total
+Showing top 20 nodes out of 156
+      flat  flat%   sum%        cum   cum%
+     110ms 37.93% 37.93%      110ms 37.93%  syscall.Syscall6
+      20ms  6.90% 44.83%       20ms  6.90%  runtime.epollwait
+      20ms  6.90% 51.72%       20ms  6.90%  runtime.memclrNoHeapPointers
+      10ms  3.45% 55.17%       10ms  3.45%  fmt.(*ss).advance
+      10ms  3.45% 58.62%       10ms  3.45%  fmt.indexRune
+      10ms  3.45% 62.07%       10ms  3.45%  github.com/prometheus/client_golang/prometheus/internal.metricSorter.Less
+      10ms  3.45% 65.52%       10ms  3.45%  runtime.(*itabTableType).find
+      10ms  3.45% 68.97%       10ms  3.45%  runtime.(*randomEnum).next
+      10ms  3.45% 72.41%       10ms  3.45%  runtime.epollctl
+      10ms  3.45% 75.86%       10ms  3.45%  runtime.futex
+      10ms  3.45% 79.31%       10ms  3.45%  runtime.heapBitsSetType
+      10ms  3.45% 82.76%       10ms  3.45%  runtime.lock
+      10ms  3.45% 86.21%       10ms  3.45%  runtime.siftupTimer
+      10ms  3.45% 89.66%       10ms  3.45%  runtime.unlock
+      10ms  3.45% 93.10%       10ms  3.45%  strconv.(*extFloat).frexp10
+      10ms  3.45% 96.55%       10ms  3.45%  strconv.readFloat
+      10ms  3.45%   100%       10ms  3.45%  syscall.Syscall
+         0     0%   100%       10ms  3.45%  bufio.(*Writer).Flush
+         0     0%   100%       10ms  3.45%  bytes.(*Buffer).Grow
+         0     0%   100%       10ms  3.45%  bytes.(*Buffer).ReadFrom
+
+---
+
+(pprof) top -cum 50
+Showing nodes accounting for 150ms, 51.72% of 290ms total
+Showing top 50 nodes out of 156
+      flat  flat%   sum%        cum   cum%
+         0     0%     0%      110ms 37.93%  os.Open (inline)
+         0     0%     0%      110ms 37.93%  os.OpenFile
+         0     0%     0%      110ms 37.93%  os.openFileNolog
+     110ms 37.93% 37.93%      110ms 37.93%  syscall.Syscall6
+         0     0% 37.93%      100ms 34.48%  github.com/prometheus/procfs/sysfs.FS.SystemCpufreq.func1
+         0     0% 37.93%      100ms 34.48%  github.com/prometheus/procfs/sysfs.parseCpufreqCpuinfo
+         0     0% 37.93%      100ms 34.48%  golang.org/x/sync/errgroup.(*Group).Go.func1
+         0     0% 37.93%      100ms 34.48%  syscall.Open (inline)
+         0     0% 37.93%      100ms 34.48%  syscall.openat
+         0     0% 37.93%       70ms 24.14%  fildr-cli/internal/gateway.(*promCollector).Collect.func1
+         0     0% 37.93%       70ms 24.14%  github.com/prometheus/procfs/internal/util.SysReadFile
+         0     0% 37.93%       60ms 20.69%  github.com/prometheus/procfs/internal/util.ReadUintFromFile
+         0     0% 37.93%       60ms 20.69%  io/ioutil.ReadFile
+         0     0% 37.93%       50ms 17.24%  fildr-cli/internal/gateway.Run.func1
+         0     0% 37.93%       40ms 13.79%  fildr-cli/internal/gateway.getMetrics
+         0     0% 37.93%       30ms 10.34%  fildr-cli/internal/modules/node.(*cpuCollector).Update
+         0     0% 37.93%       30ms 10.34%  fildr-cli/internal/modules/node.(*cpuCollector).updateStat
+         0     0% 37.93%       30ms 10.34%  fildr-cli/internal/modules/node.(*netClassCollector).Update
+         0     0% 37.93%       30ms 10.34%  fildr-cli/internal/modules/node.(*netClassCollector).getNetClassInfo
+         0     0% 37.93%       30ms 10.34%  fmt.(*ss).doScanf
+         0     0% 37.93%       30ms 10.34%  fmt.Fscanf
+         0     0% 37.93%       30ms 10.34%  fmt.Sscanf (inline)
+         0     0% 37.93%       30ms 10.34%  github.com/prometheus/procfs.FS.Stat
+         0     0% 37.93%       30ms 10.34%  github.com/prometheus/procfs.parseCPUStat
+         0     0% 37.93%       30ms 10.34%  github.com/prometheus/procfs/sysfs.FS.NetClass
+         0     0% 37.93%       30ms 10.34%  github.com/prometheus/procfs/sysfs.NetClass.parseNetClassIface
+         0     0% 37.93%       30ms 10.34%  runtime.findrunnable
+         0     0% 37.93%       30ms 10.34%  runtime.mallocgc
+         0     0% 37.93%       30ms 10.34%  runtime.mcall
+         0     0% 37.93%       30ms 10.34%  runtime.schedule
+         0     0% 37.93%       20ms  6.90%  bytes.(*Buffer).grow
+         0     0% 37.93%       20ms  6.90%  bytes.makeSlice
+         0     0% 37.93%       20ms  6.90%  fmt.(*ss).scanOne
+         0     0% 37.93%       20ms  6.90%  github.com/prometheus/client_golang/prometheus.(*Registry).Gather
+         0     0% 37.93%       20ms  6.90%  github.com/prometheus/common/expfmt.MetricFamilyToText
+         0     0% 37.93%       20ms  6.90%  github.com/prometheus/common/expfmt.NewEncoder.func7
+         0     0% 37.93%       20ms  6.90%  github.com/prometheus/common/expfmt.encoderCloser.Encode
+         0     0% 37.93%       20ms  6.90%  github.com/prometheus/common/expfmt.writeSample
+         0     0% 37.93%       20ms  6.90%  runtime.(*mcache).nextFree
+         0     0% 37.93%       20ms  6.90%  runtime.(*mcache).refill
+         0     0% 37.93%       20ms  6.90%  runtime.(*mcentral).cacheSpan
+         0     0% 37.93%       20ms  6.90%  runtime.(*mcentral).grow
+         0     0% 37.93%       20ms  6.90%  runtime.(*mheap).alloc
+      20ms  6.90% 44.83%       20ms  6.90%  runtime.epollwait
+         0     0% 44.83%       20ms  6.90%  runtime.makeslice
+      20ms  6.90% 51.72%       20ms  6.90%  runtime.memclrNoHeapPointers
+         0     0% 51.72%       20ms  6.90%  runtime.netpoll
+         0     0% 51.72%       20ms  6.90%  runtime.park_m
+         0     0% 51.72%       10ms  3.45%  bufio.(*Writer).Flush
+         0     0% 51.72%       10ms  3.45%  bytes.(*Buffer).Grow (inline)
+
+---
+

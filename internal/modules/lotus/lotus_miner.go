@@ -35,9 +35,9 @@ type lotusMinerCollector struct {
 	logger log.Logger
 }
 
-func init() {
-	registerCollector("lotus-miner", NewLotusMinerCollector)
-}
+//func init() {
+//	registerCollector("lotus-miner", NewLotusMinerCollector)
+//}
 
 func NewLotusMinerCollector(logger log.Logger) (gateway.Collector, error) {
 

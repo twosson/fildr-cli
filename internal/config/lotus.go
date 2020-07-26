@@ -6,12 +6,14 @@ type Lotus struct {
 }
 
 type Daemon struct {
-	Enable bool   `mapstructure:"enable"`
-	Ip     string `mapstructure:"ip"`
-	Port   int    `mapstructure:"port"`
+	Enable        bool   `mapstructure:"enable"`
+	ListenAddress string `mapstructure:"listen-address"`
+	Token         string `mapstructure:"token"`
 }
 
 type Miner struct {
-	Enable bool   `mapstructure:"enable"`
-	Path   string `mapstructure:"path"`
+	Enable        bool   `mapstructure:"enable"`
+	Path          string `mapstructure:"path"`
+	ListenAddress string `mapstructure:"listen-address"`
+	Token         string `mapstructure:"token"`
 }

@@ -7,6 +7,8 @@ import (
 	"github.com/filecoin-project/go-jsonrpc"
 	"github.com/filecoin-project/go-jsonrpc/auth"
 	"github.com/filecoin-project/lotus/api"
+	"github.com/filecoin-project/lotus/chain/types"
+	"github.com/ipfs/go-cid"
 	"github.com/libp2p/go-libp2p-core/network"
 	"github.com/libp2p/go-libp2p-core/peer"
 	"net/http"
@@ -43,11 +45,46 @@ type LotusApi struct {
 	SyncState func() (*api.SyncState, error)
 
 	// Miner
-	ActorAddress func() (address.Address, error)
+	ActorAddress          func() (address.Address, error)
+	StateMinerInfo        func(address.Address, types.TipSetKey) (api.MinerInfo, error)
+	StateMinerPower       func(address.Address, types.TipSetKey) (*api.MinerPower, error)
+	StateMinerSectorCount func(address.Address, types.TipSetKey) (api.MinerSectors, error)
+	StateGetActor         func(actor address.Address, tsk types.TipSetKey) (*types.Actor, error)
+
+	ChainReadObj func(cid.Cid) ([]byte, error)
+
+	WalletBalance func(address.Address) (types.BigInt, error)
+
+	StateMarketBalance func(address.Address, types.TipSetKey) (api.MarketBalance, error)
 }
 
 type LotusClient struct {
+	api      *LotusApi
 	shutdown func()
+}
+
+var lotusMergeClient *LotusMergeClient
+
+type LotusMergeClient struct {
+	daemonClient *LotusClient
+	minerClient  *LotusClient
+}
+
+func getLotusMergeClient() (*LotusMergeClient, error) {
+	if lotusMergeClient == nil {
+		lotusMergeClient = &LotusMergeClient{}
+		daemonClient := &LotusClient{}
+		if err := daemonClient.WithDaemonClient(); err != nil {
+			return nil, err
+		}
+		minerClient := &LotusClient{}
+		if err := minerClient.WithMinerClient(); err != nil {
+			return nil, err
+		}
+		lotusMergeClient.daemonClient = daemonClient
+		lotusMergeClient.minerClient = minerClient
+	}
+	return lotusMergeClient, nil
 }
 
 func (c *LotusClient) WithCommonClient(ctx context.Context, lotusApi *LotusApi, listenAddress string, token string) error {
@@ -65,21 +102,26 @@ func (c *LotusClient) WithCommonClient(ctx context.Context, lotusApi *LotusApi, 
 	return nil
 }
 
-func (c *LotusClient) WithMinerClient(lotusApi *LotusApi) error {
+func (c *LotusClient) WithMinerClient() error {
 	c.Shutdown()
 	cfg := config.Get()
 	requestHeader := http.Header{}
 	requestHeader.Add("Content-Type", "application/json")
-	requestHeader.Add("Authorization", "Bearer "+cfg.Lotus.Miner.Token)
+	token := cfg.Lotus.Miner.Token
+	if len(token) > 10 {
+		requestHeader.Add("Authorization", "Bearer "+token)
+	}
+	lotusApi := &LotusApi{}
 	closer, err := jsonrpc.NewClient("ws://"+cfg.Lotus.Miner.ListenAddress+"/rpc/v0", "Filecoin", lotusApi, requestHeader)
 	if err != nil {
 		return err
 	}
 	c.shutdown = closer
+	c.api = lotusApi
 	return nil
 }
 
-func (c *LotusClient) WithDaemonClient(lotusApi *LotusApi) error {
+func (c *LotusClient) WithDaemonClient() error {
 	c.Shutdown()
 	cfg := config.Get()
 	requestHeader := http.Header{}
@@ -89,11 +131,13 @@ func (c *LotusClient) WithDaemonClient(lotusApi *LotusApi) error {
 		requestHeader.Add("Authorization", "Bearer "+token)
 	}
 
+	lotusApi := &LotusApi{}
 	closer, err := jsonrpc.NewClient("ws://"+cfg.Lotus.Daemon.ListenAddress+"/rpc/v0", "Filecoin", lotusApi, requestHeader)
 	if err != nil {
 		return err
 	}
 	c.shutdown = closer
+	c.api = lotusApi
 	return nil
 }
 

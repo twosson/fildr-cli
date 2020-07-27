@@ -68,7 +68,8 @@ func InitializationConfig() error {
 	viper.Set("lotus.daemon.token", "")
 
 	viper.Set("lotus.miner.enable", false)
-	viper.Set("lotus.miner.path", "")
+	viper.Set("lotus.miner.listen-address", "127.0.0.1:2345")
+	viper.Set("lotus.miner.token", "")
 
 	return viper.WriteConfig()
 }

@@ -9,19 +9,19 @@ type daemon struct {
 	daemonVersion string
 	apiVersion    string
 
-	lotusApi    *LotusApi
-	lotusClient *LotusClient
+	lotusClient *LotusMergeClient
 	isShutdown  bool
 }
 
 func newDaemon() (*daemon, error) {
 	daemon := &daemon{}
-	daemon.lotusApi = &LotusApi{}
-	daemon.lotusClient = &LotusClient{}
-	daemon.isShutdown = false
-	if err := daemon.lotusClient.WithDaemonClient(daemon.lotusApi); err != nil {
+
+	lotusClient, err := getLotusMergeClient()
+	if err != nil {
 		return nil, err
 	}
+	daemon.lotusClient = lotusClient
+	daemon.isShutdown = false
 
 	daemonVersion, apiVersion, err := daemon.version()
 	if err != nil {
@@ -38,7 +38,7 @@ func newDaemon() (*daemon, error) {
 	daemon.apiVersion = apiVersion
 
 	cancelCtx, cancel := context.WithCancel(context.Background())
-	closingCh, err := daemon.lotusApi.Closing(cancelCtx)
+	closingCh, err := lotusClient.daemonClient.api.Closing(cancelCtx)
 	if err != nil {
 		cancel()
 		return nil, err
@@ -54,7 +54,7 @@ func newDaemon() (*daemon, error) {
 }
 
 func (d *daemon) netId() (string, error) {
-	pid, err := d.lotusApi.ID()
+	pid, err := d.lotusClient.daemonClient.api.ID()
 	if err != nil {
 		return "", err
 	}
@@ -62,7 +62,7 @@ func (d *daemon) netId() (string, error) {
 }
 
 func (d *daemon) version() (string, string, error) {
-	v, err := d.lotusApi.Version()
+	v, err := d.lotusClient.daemonClient.api.Version()
 	if err != nil {
 		return "", "", err
 	}

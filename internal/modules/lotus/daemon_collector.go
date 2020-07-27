@@ -25,6 +25,7 @@ func NewDaemonCollector(logger log.Logger) (gateway.Collector, error) {
 }
 
 func (d *daemonCollector) Update(ch chan<- prometheus.Metric) error {
+
 	var runState float64 = 1
 	if d.daemon.isShutdown {
 		runState = 0
@@ -39,7 +40,7 @@ func (d *daemonCollector) Update(ch chan<- prometheus.Metric) error {
 		d.daemon.apiVersion,
 	)
 
-	peers, err := d.daemon.lotusApi.NetPeers()
+	peers, err := d.daemon.lotusClient.daemonClient.api.NetPeers()
 	if err != nil {
 		d.logger.Warnf("Lotus net peers err: %v", err)
 		return err
@@ -52,7 +53,7 @@ func (d *daemonCollector) Update(ch chan<- prometheus.Metric) error {
 		d.daemon.id,
 	)
 
-	scores, err := d.daemon.lotusApi.NetPubsubScores()
+	scores, err := d.daemon.lotusClient.daemonClient.api.NetPubsubScores()
 	if err != nil {
 		d.logger.Warnf("Lotus net pubsub scores err: %v", err)
 		return err
@@ -86,7 +87,7 @@ func (d *daemonCollector) Update(ch chan<- prometheus.Metric) error {
 		)
 	}
 
-	syncState, err := d.daemon.lotusApi.SyncState()
+	syncState, err := d.daemon.lotusClient.daemonClient.api.SyncState()
 	if err != nil {
 		d.logger.Warnf("Lotus sync status err: %v", err)
 		return err

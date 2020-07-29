@@ -4,10 +4,16 @@ import (
 	"context"
 	"fildr-cli/internal/config"
 	"github.com/filecoin-project/go-address"
+	"github.com/filecoin-project/go-fil-markets/storagemarket"
 	"github.com/filecoin-project/go-jsonrpc"
 	"github.com/filecoin-project/go-jsonrpc/auth"
 	"github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/types"
+	"github.com/filecoin-project/sector-storage/fsutil"
+	"github.com/filecoin-project/sector-storage/stores"
+	"github.com/filecoin-project/sector-storage/storiface"
+	"github.com/filecoin-project/specs-actors/actors/abi"
+	miner2 "github.com/filecoin-project/specs-actors/actors/builtin/miner"
 	"github.com/ipfs/go-cid"
 	"github.com/libp2p/go-libp2p-core/network"
 	"github.com/libp2p/go-libp2p-core/peer"
@@ -56,6 +62,23 @@ type LotusApi struct {
 	WalletBalance func(address.Address) (types.BigInt, error)
 
 	StateMarketBalance func(address.Address, types.TipSetKey) (api.MarketBalance, error)
+
+	SectorsList   func() ([]abi.SectorNumber, error)
+	SectorsStatus func(abi.SectorNumber) (api.SectorInfo, error)
+
+	MarketListIncompleteDeals func() ([]storagemarket.MinerDeal, error)
+
+	ChainHead            func() (*types.TipSet, error)
+	StateMinerDeadlines  func(address.Address, types.TipSetKey) ([]*miner2.Deadline, error)
+	StateMinerPartitions func(address.Address, uint64, types.TipSetKey) ([]*miner2.Partition, error)
+
+	StorageList  func() (map[stores.ID][]stores.Decl, error)
+	StorageLocal func() (map[stores.ID]string, error)
+	StorageStat  func(id stores.ID) (fsutil.FsStat, error)
+	StorageInfo  func(stores.ID) (stores.StorageInfo, error)
+
+	WorkerJobs  func() (map[uint64][]storiface.WorkerJob, error)
+	WorkerStats func() (map[uint64]storiface.WorkerStats, error)
 }
 
 type LotusClient struct {

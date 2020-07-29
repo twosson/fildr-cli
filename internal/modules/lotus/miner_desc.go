@@ -18,6 +18,20 @@ var (
 		nil,
 	)
 
+	minerPeersDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "peers"),
+		"Lotus net peers and scores",
+		[]string{ownerNumber, minerNumber, "peer_id", "ip", "port"},
+		nil,
+	)
+
+	minerConnectionsDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "connections"),
+		"Lotus miner net peers connections",
+		[]string{ownerNumber, minerNumber},
+		nil,
+	)
+
 	minerBytePowerDesc = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, minerNamespace, "minerbytepower"),
 		"Filecoin miner Byte Power",
@@ -134,6 +148,83 @@ var (
 		prometheus.BuildFQName(namespace, minerNamespace, "marketlocked"),
 		"Filecoin market escrow",
 		[]string{ownerNumber, minerNumber},
+		nil,
+	)
+
+	dealsDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "deals"),
+		"Filecoin market deals",
+		[]string{ownerNumber, minerNumber},
+		nil,
+	)
+
+	faultsDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "faults"),
+		"Filecoin proving faults",
+		[]string{ownerNumber, minerNumber},
+		nil,
+	)
+
+	recoveringDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "recovering"),
+		"Filecoin proving recovering",
+		[]string{ownerNumber, minerNumber},
+		nil,
+	)
+
+	faultPercDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "faultperc"),
+		"Filecoin proving fault perc",
+		[]string{ownerNumber, minerNumber},
+		nil,
+	)
+
+	storageInfoDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "storageinfo"),
+		"Filecoin storage info",
+		[]string{ownerNumber, minerNumber, "storage_id", "weight", "seal", "store", "path", "url"},
+		nil,
+	)
+
+	storageMetricsDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "storagemetrics"),
+		"Filecoin storage metrics",
+		[]string{ownerNumber, minerNumber, "storage_id", "metric_name"},
+		nil,
+	)
+
+	jobsDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "jobs"),
+		"Filecoin jobs",
+		[]string{ownerNumber, minerNumber, "worker_id", "jobs_id", "sector_id", "hostname", "task", "start_time"},
+		nil,
+	)
+
+	jobsDurationDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "jobsduration"),
+		"Filecoin jobs duration",
+		[]string{ownerNumber, minerNumber, "task"},
+		nil,
+	)
+
+	workerInfoDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "workerinfo"),
+		"Filecoin worker info",
+		[]string{ownerNumber, minerNumber, "worker_id", "hostname", "cpus", "ram", "vmem"},
+		nil,
+	)
+
+	workerMetricsDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "workermetrics"),
+		"Filecoin worker metrics",
+		[]string{ownerNumber, minerNumber, "worker_id", "hostname", "metric_name"},
+		nil,
+	)
+
+	workerGpuDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, minerNamespace, "workergpu"),
+		"Filecoin worker metrics",
+		[]string{ownerNumber, minerNumber, "worker_id", "hostname", "gpu_name"},
 		nil,
 	)
 )

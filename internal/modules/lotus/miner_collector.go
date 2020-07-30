@@ -390,7 +390,7 @@ func (m *minerCollector) Update(ch chan<- prometheus.Metric) error {
 	}
 
 	for _, s := range sectors {
-		st, err := m.miner.lotusClient.minerClient.api.SectorsStatus(s)
+		st, err := m.miner.lotusClient.minerClient.api.SectorsStatus(s, false)
 		if err != nil {
 			m.logger.Warnf("lotus get sectors status err: %v", err)
 			return err

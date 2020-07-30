@@ -64,7 +64,7 @@ type LotusApi struct {
 	StateMarketBalance func(address.Address, types.TipSetKey) (api.MarketBalance, error)
 
 	SectorsList   func() ([]abi.SectorNumber, error)
-	SectorsStatus func(abi.SectorNumber) (api.SectorInfo, error)
+	SectorsStatus func(sid abi.SectorNumber, showOnChainInfo bool) (api.SectorInfo, error)
 
 	MarketListIncompleteDeals func() ([]storagemarket.MinerDeal, error)
 

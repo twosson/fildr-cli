@@ -389,6 +389,8 @@ func (m *minerCollector) Update(ch chan<- prometheus.Metric) error {
 		"PackingFailed":        0,
 		"FinalizeFailed":       0,
 		"Faulty":               0,
+		"FaultReported":        0,
+		"FaultedFinal":         0,
 	}
 
 	for _, s := range sectors {

@@ -685,6 +685,7 @@ func (m *minerCollector) Update(ch chan<- prometheus.Metric) error {
 				m.miner.ownerNumber,
 				m.miner.minerNumber,
 				job.Task.Short(),
+				strconv.FormatUint(job.ID, 10),
 			)
 			delete(jobsCache, jid)
 		}

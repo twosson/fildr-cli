@@ -367,6 +367,8 @@ func (m *minerCollector) Update(ch chan<- prometheus.Metric) error {
 
 	buckets := map[sealing.SectorState]int{
 		"Total":                len(sectors),
+		"Proving":              0,
+		"WaitDeals":            0,
 		"UndefinedSectorState": 0,
 		"Empty":                0,
 		"Packing":              0,

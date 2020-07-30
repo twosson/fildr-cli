@@ -645,6 +645,7 @@ func (m *minerCollector) Update(ch chan<- prometheus.Metric) error {
 
 	jobs, err := m.miner.lotusClient.minerClient.api.WorkerJobs()
 	if err != nil {
+		m.logger.Warnf("lotus get worker jobs err: %v", err)
 		return err
 	}
 

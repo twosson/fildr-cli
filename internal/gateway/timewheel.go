@@ -27,6 +27,7 @@ func Run(ctx context.Context) error {
 	tws.AddCron(time.Second*5, func() {
 		datas, err := getMetrics()
 		if err != nil {
+			logger.Warnf("gateway get metrics err : %v", err)
 			return
 		}
 		for i := range datas {

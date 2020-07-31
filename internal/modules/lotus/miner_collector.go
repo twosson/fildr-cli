@@ -727,6 +727,17 @@ func (m *minerCollector) Update(ch chan<- prometheus.Metric) error {
 		ch <- prometheus.MustNewConstMetric(
 			workerMetricsDesc,
 			prometheus.GaugeValue,
+			float64(stats.CpuUse)/float64(stats.Info.Resources.CPUs)*100,
+			m.miner.ownerNumber,
+			m.miner.minerNumber,
+			strconv.FormatUint(wid, 10),
+			stats.Info.Hostname,
+			"cpu_prec",
+		)
+
+		ch <- prometheus.MustNewConstMetric(
+			workerMetricsDesc,
+			prometheus.GaugeValue,
 			float64(stats.Info.Resources.MemReserved+stats.MemUsedMin),
 			m.miner.ownerNumber,
 			m.miner.minerNumber,
@@ -738,12 +749,34 @@ func (m *minerCollector) Update(ch chan<- prometheus.Metric) error {
 		ch <- prometheus.MustNewConstMetric(
 			workerMetricsDesc,
 			prometheus.GaugeValue,
+			float64((stats.Info.Resources.MemReserved+stats.MemUsedMin)*100/stats.Info.Resources.MemPhysical),
+			m.miner.ownerNumber,
+			m.miner.minerNumber,
+			strconv.FormatUint(wid, 10),
+			stats.Info.Hostname,
+			"ram_prec",
+		)
+
+		ch <- prometheus.MustNewConstMetric(
+			workerMetricsDesc,
+			prometheus.GaugeValue,
 			float64(stats.Info.Resources.MemReserved+stats.MemUsedMax),
 			m.miner.ownerNumber,
 			m.miner.minerNumber,
 			strconv.FormatUint(wid, 10),
 			stats.Info.Hostname,
 			"vmem_used",
+		)
+
+		ch <- prometheus.MustNewConstMetric(
+			workerMetricsDesc,
+			prometheus.GaugeValue,
+			float64((stats.Info.Resources.MemReserved+stats.MemUsedMax)*100/vmem),
+			m.miner.ownerNumber,
+			m.miner.minerNumber,
+			strconv.FormatUint(wid, 10),
+			stats.Info.Hostname,
+			"vmem_prec",
 		)
 
 		var gpuUsed float64 = 0

@@ -203,7 +203,7 @@ var (
 	jobsDurationDesc = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, minerNamespace, "jobsduration"),
 		"Filecoin jobs duration",
-		[]string{ownerNumber, minerNumber, "task", "job_id"},
+		[]string{ownerNumber, minerNumber, "task", "job_id", "worker_id"},
 		nil,
 	)
 

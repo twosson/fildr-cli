@@ -23,7 +23,12 @@ type minerCollector struct {
 	logger log.Logger
 }
 
-var jobsCache map[uint64]storiface.WorkerJob = make(map[uint64]storiface.WorkerJob, 10)
+type workerJobZib struct {
+	wid uint64
+	job storiface.WorkerJob
+}
+
+var jobsCache = make(map[uint64]*workerJobZib, 10)
 
 func init() {
 	registerCollector("lotus-miner", NewMinerCollector)
@@ -654,12 +659,12 @@ func (m *minerCollector) Update(ch chan<- prometheus.Metric) error {
 		return err
 	}
 
-	var tmpJobs map[uint64]storiface.WorkerJob = make(map[uint64]storiface.WorkerJob, 10)
+	var tmpJobs = make(map[uint64]*workerJobZib, 10)
 
 	for wid, jobs := range jobs {
 		for _, job := range jobs {
-			tmpJobs[job.ID] = job
-			jobsCache[job.ID] = job
+			tmpJobs[job.ID] = &workerJobZib{wid: wid, job: job}
+			jobsCache[job.ID] = &workerJobZib{wid: wid, job: job}
 			ch <- prometheus.MustNewConstMetric(
 				jobsDesc,
 				prometheus.GaugeValue,
@@ -681,11 +686,12 @@ func (m *minerCollector) Update(ch chan<- prometheus.Metric) error {
 			ch <- prometheus.MustNewConstMetric(
 				jobsDurationDesc,
 				prometheus.GaugeValue,
-				time.Now().Sub(job.Start).Truncate(time.Millisecond*100).Seconds(),
+				time.Now().Sub(job.job.Start).Truncate(time.Millisecond*100).Seconds(),
 				m.miner.ownerNumber,
 				m.miner.minerNumber,
-				job.Task.Short(),
-				strconv.FormatUint(job.ID, 10),
+				job.job.Task.Short(),
+				strconv.FormatUint(job.job.ID, 10),
+				strconv.FormatUint(job.wid, 10),
 			)
 			delete(jobsCache, jid)
 		}

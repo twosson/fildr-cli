@@ -154,7 +154,7 @@ var (
 	dealsDesc = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, minerNamespace, "deals"),
 		"Filecoin market deals",
-		[]string{ownerNumber, minerNumber},
+		[]string{ownerNumber, minerNumber, "mode"},
 		nil,
 	)
 

@@ -6,6 +6,7 @@ import (
 	"fildr-cli/internal/log"
 	"github.com/fatih/color"
 	"github.com/filecoin-project/go-address"
+	"github.com/filecoin-project/go-fil-markets/storagemarket"
 	"github.com/filecoin-project/lotus/build"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/sector-storage/storiface"
@@ -434,7 +435,29 @@ func (m *minerCollector) Update(ch chan<- prometheus.Metric) error {
 		float64(len(deals)),
 		m.miner.ownerNumber,
 		m.miner.minerNumber,
+		"Total",
 	)
+
+	var dealsCountHelper = make(map[storagemarket.StorageDealStatus]int, 10)
+
+	for _, deal := range deals {
+		if _, ok := dealsCountHelper[deal.State]; ok {
+			dealsCountHelper[deal.State] = dealsCountHelper[deal.State] + 1
+		} else {
+			dealsCountHelper[deal.State] = 1
+		}
+	}
+
+	for state, count := range dealsCountHelper {
+		ch <- prometheus.MustNewConstMetric(
+			dealsDesc,
+			prometheus.GaugeValue,
+			float64(count),
+			m.miner.ownerNumber,
+			m.miner.minerNumber,
+			storagemarket.DealStates[state],
+		)
+	}
 
 	head, err := m.miner.lotusClient.daemonClient.api.ChainHead()
 	if err != nil {

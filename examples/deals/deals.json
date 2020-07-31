@@ -1,0 +1,290 @@
+[
+  {
+    "Proposal": {
+      "PieceCID": {
+        "/": "baga6ea4seaqkzg7icttrujqt2lbag7b7l22ytruulpijjsgli4sychept5qsmbi"
+      },
+      "PieceSize": 2097152,
+      "VerifiedDeal": false,
+      "Client": "t3uzy5l3ksbbvz7t4cvbzfzemkwjhryvfufg5c33476yrqri6ax3vraxer2ikgfr4aim2jswk5xvltycphx7aa",
+      "Provider": "t023449",
+      "Label": "",
+      "StartEpoch": 10502,
+      "EndEpoch": 637168,
+      "StoragePricePerEpoch": "500000000",
+      "ProviderCollateral": "2080768",
+      "ClientCollateral": "0"
+    },
+    "ClientSignature": {
+      "Type": 2,
+      "Data": "s/YW31DWrEGTLPWTodw/LJLE+LX0W30JN5IrIIYdsZ3Ij38ZcXarZb8yRWmqizOzBAhdtiaUpxL1tNCk7QgpLN7pSrPq13Q9UxvIqXq0tA7OhNfYAlRMwKzeTu3aEQDe"
+    },
+    "ProposalCid": {
+      "/": "bafyreia57bxea4myoms4uhulmxu67qf3cfwqx2bdhkccal77lunu3zjjru"
+    },
+    "AddFundsCid": {
+      "/": "bafy2bzacedtzbedccjzfxju5f5354r3a3sioik6hn2feonshog7udptmnadx6"
+    },
+    "PublishCid": {
+      "/": "bafy2bzacec7bqqiulwqmt23kvo5qig3rpvgvkdogidz4scm6cya4riw2oedeg"
+    },
+    "Miner": "12D3KooWJ5pFoYnXdeCpmaSy7pmXP3D9c99bBoR7LWSz3cZERBEQ",
+    "Client": "12D3KooWFpeWQLrni39w3xbFmVP2xbJDY2tBk5WUH5qv3JPY9k9t",
+    "State": 5,
+    "PiecePath": "fstmp575771415",
+    "MetadataPath": "",
+    "SlashEpoch": 0,
+    "FastRetrieval": true,
+    "Message": "",
+    "StoreID": null,
+    "Ref": {
+      "TransferType": "graphsync",
+      "Root": {
+        "/": "bafk2bzacedduqyg5osaop5fvvzyf7ejx5efavif4m7losdhya6g5m2l5xw3k2"
+      },
+      "PieceCid": null,
+      "PieceSize": 0
+    },
+    "DealID": 15726
+  },
+  {
+    "Proposal": {
+      "PieceCID": {
+        "/": "baga6ea4seaqasyeuzlto25nbgvisithd5qkcysv6l2acjr4bjiqqucrfympuwjq"
+      },
+      "PieceSize": 65536,
+      "VerifiedDeal": false,
+      "Client": "t3qm4wku6pktn3g4dpulgyrcywzkgom2u4pjy5y6uhhwmk2xiyksaohffwmb5zo4on4xyokgccncaddjtlfqpa",
+      "Provider": "t023449",
+      "Label": "",
+      "StartEpoch": 9090,
+      "EndEpoch": 702832,
+      "StoragePricePerEpoch": "2000000",
+      "ProviderCollateral": "65024",
+      "ClientCollateral": "0"
+    },
+    "ClientSignature": {
+      "Type": 2,
+      "Data": "kP3TFuuW+cYYoDxsW+x4is/rEJhcoKgm3rl7l0y8uHjD13X8lMx7uNNPlKhtPO7WDXpJ52AjwcWMHCSi7WyHeaa17MKviSZR9Yb57vACwr1tpWX7Dwn98rq2TnoDCslN"
+    },
+    "ProposalCid": {
+      "/": "bafyreibdzyng5yloamszdplx6pya5jupo2hlbixh6g56mtcoxp3pscxve4"
+    },
+    "AddFundsCid": {
+      "/": "bafy2bzacecsd3s7iazzxygysanwbk35267uiby3xw7f66vbor4mclx3x5iocu"
+    },
+    "PublishCid": {
+      "/": "bafy2bzacecelxksc2bypkn3uqacmquptetf373ljdd4sh5bw2e6xx3egxikfu"
+    },
+    "Miner": "12D3KooWJ5pFoYnXdeCpmaSy7pmXP3D9c99bBoR7LWSz3cZERBEQ",
+    "Client": "12D3KooWQnBu49UMqX3RDJcLEDogDudpz9WgeiNvycrx8HMCYxM5",
+    "State": 26,
+    "PiecePath": "fstmp574968822",
+    "MetadataPath": "",
+    "SlashEpoch": 0,
+    "FastRetrieval": true,
+    "Message": "locating piece for deal ID 14516 in sector: no sealed sector found",
+    "StoreID": null,
+    "Ref": {
+      "TransferType": "graphsync",
+      "Root": {
+        "/": "bafk2bzacecn65sybftjocjwgezqoeeb73qyodkwqgb5n5r5rebcx2acthfugy"
+      },
+      "PieceCid": null,
+      "PieceSize": 0
+    },
+    "DealID": 14516
+  },
+  {
+    "Proposal": {
+      "PieceCID": {
+        "/": "baga6ea4seaqntmt3mxcrl66cm4j5tdgi5oa32e3r3pakbmwgn4mduhdcy4nbcmi"
+      },
+      "PieceSize": 256,
+      "VerifiedDeal": false,
+      "Client": "t3svhduklvlrrohcxt42w4fmbnsz5hsbr66yiabsna6gbqwabhjgtfllu3pkyk6im3j3emjyf3upzjn5tetstq",
+      "Provider": "t023449",
+      "Label": "",
+      "StartEpoch": 11208,
+      "EndEpoch": 637168,
+      "StoragePricePerEpoch": "50000000000",
+      "ProviderCollateral": "254",
+      "ClientCollateral": "0"
+    },
+    "ClientSignature": {
+      "Type": 2,
+      "Data": "sfsPlLWBwGLV11rRAHKGdlcDccioiJZERkJRocteBxG5exXs3OT3hwJJ2PlBliceAREsYrnZPHizBGsI/fbMZePdq9ojz3n5SfactOzPd7UR97Gf+5q+P0OLPROhOTNF"
+    },
+    "ProposalCid": {
+      "/": "bafyreibumiti5mxuoipxgfelozft34zhpgnvtfwdgn4ma3iqlhaywkhn3y"
+    },
+    "AddFundsCid": {
+      "/": "bafy2bzacebgqja27heahywdpjhbn65ahpvpimatagpi4zmyayrx6kiuy7dw22"
+    },
+    "PublishCid": {
+      "/": "bafy2bzacebir7qfpwvi7tun2un7zwznvnf6osvwiomfsfng6v4kju23k5v34g"
+    },
+    "Miner": "12D3KooWJ5pFoYnXdeCpmaSy7pmXP3D9c99bBoR7LWSz3cZERBEQ",
+    "Client": "12D3KooWMQ4rPGvspi3NasP9zcSgo7fpHZUQmu2VEdn9tgWXuVka",
+    "State": 5,
+    "PiecePath": "fstmp516742497",
+    "MetadataPath": "",
+    "SlashEpoch": 0,
+    "FastRetrieval": true,
+    "Message": "",
+    "StoreID": null,
+    "Ref": {
+      "TransferType": "graphsync",
+      "Root": {
+        "/": "bafkqaibsgazdaickovwhsibtgefhizltoqqgizlbnqfeoylwnfxau33lbi"
+      },
+      "PieceCid": null,
+      "PieceSize": 0
+    },
+    "DealID": 16590
+  },
+  {
+    "Proposal": {
+      "PieceCID": {
+        "/": "baga6ea4seaqmxx4aickslopwiswakz66hax5ed4jvkknagwm5q7quyoose7dsmq"
+      },
+      "PieceSize": 536870912,
+      "VerifiedDeal": false,
+      "Client": "t3sxpd3phrzs7mfibcnfxdqtitrgfapeaebm5gavwxbtnzlwjnwbo7qgu7iob2iww7zxplpxrlsvmhz67efjjq",
+      "Provider": "t023449",
+      "Label": "",
+      "StartEpoch": 11122,
+      "EndEpoch": 713200,
+      "StoragePricePerEpoch": "500000000",
+      "ProviderCollateral": "532676608",
+      "ClientCollateral": "0"
+    },
+    "ClientSignature": {
+      "Type": 2,
+      "Data": "p3Hg8AfEI/fZNhLXB5HccnsR1i+zRtZrisTjlQL+9w1xakstwMLrNvM9YDD4njH7BzVYZn1HWAQIJmYuMLNjFLpU+hpifZxQ10eGmhZXV1LTxT5xnfONPje/j6AePK9d"
+    },
+    "ProposalCid": {
+      "/": "bafyreih2yuqpwrtr4xhpmhdo3tezlhpqerwexv6mlakk75w4cyfwcqyo5u"
+    },
+    "AddFundsCid": {
+      "/": "bafy2bzacecbzcjxj2hgjsahmamtawfnznf74ejiabb3ncab5i6scaan6swwty"
+    },
+    "PublishCid": {
+      "/": "bafy2bzaceamardfprcdue7drhgwox7ybf3ixz57fhdhevgl5tw5vagalbo2rk"
+    },
+    "Miner": "12D3KooWJ5pFoYnXdeCpmaSy7pmXP3D9c99bBoR7LWSz3cZERBEQ",
+    "Client": "12D3KooWASHN4Y6RTVFj1kCAnpd7jacEVCN1qEhtUUoWVi8z2iwu",
+    "State": 5,
+    "PiecePath": "fstmp005094282",
+    "MetadataPath": "",
+    "SlashEpoch": 0,
+    "FastRetrieval": true,
+    "Message": "",
+    "StoreID": null,
+    "Ref": {
+      "TransferType": "graphsync",
+      "Root": {
+        "/": "bafykbzacea4q5daarfld5uha7zqkb7zxlbxxly5j56453mwj2sl7b2nky4fu6"
+      },
+      "PieceCid": null,
+      "PieceSize": 0
+    },
+    "DealID": 16070
+  },
+  {
+    "Proposal": {
+      "PieceCID": {
+        "/": "baga6ea4seaqhtl2gnobioqccmzb2yqn634rvjvsz7podg45wixt4tpvmsx6b6ly"
+      },
+      "PieceSize": 2048,
+      "VerifiedDeal": false,
+      "Client": "t1vkwus7ncp4pu22joheixz5rtkd7vv27jriw5eni",
+      "Provider": "t023449",
+      "Label": "",
+      "StartEpoch": 10467,
+      "EndEpoch": 637168,
+      "StoragePricePerEpoch": "500000000",
+      "ProviderCollateral": "2032",
+      "ClientCollateral": "0"
+    },
+    "ClientSignature": {
+      "Type": 1,
+      "Data": "XdkG/6r7+JDuyE0g1o7Ho/DEmLTMpzxna+31a6d4I1dpp75E2SHhN3E5v2oNhttwxLe+dP3b1y1uR5/oC/b5IAE="
+    },
+    "ProposalCid": {
+      "/": "bafyreihbcybvso6pshyr4pqxosr7pkd34pmambvxzaw7pqe6mk6bnaglpa"
+    },
+    "AddFundsCid": {
+      "/": "bafy2bzacec76wrydzr26uod3r3hn2s5k7unw5dwfz63nsdwkzst43uit3cz4c"
+    },
+    "PublishCid": {
+      "/": "bafy2bzaced7lwaqiaqbpkbfbge6zlrxexseyrqgcxvlxoyigsvqiay4us2czc"
+    },
+    "Miner": "12D3KooWJ5pFoYnXdeCpmaSy7pmXP3D9c99bBoR7LWSz3cZERBEQ",
+    "Client": "12D3KooWPdcTdGF5kumSi6eZEhtpdBmJeh8Gw91TZxD3tCDp1mPN",
+    "State": 5,
+    "PiecePath": "fstmp343343325",
+    "MetadataPath": "",
+    "SlashEpoch": 0,
+    "FastRetrieval": true,
+    "Message": "",
+    "StoreID": null,
+    "Ref": {
+      "TransferType": "graphsync",
+      "Root": {
+        "/": "bafk2bzaceb246ylj2apialjxme7yzfkcq4oxgy4o7jgl25zx6e4mcmw32kfac"
+      },
+      "PieceCid": null,
+      "PieceSize": 0
+    },
+    "DealID": 15710
+  },
+  {
+    "Proposal": {
+      "PieceCID": {
+        "/": "baga6ea4seaqdvsikcnwpbmzkbnag3ila7kywgus23wg2prewrq5jlwl6bg7v6mi"
+      },
+      "PieceSize": 2097152,
+      "VerifiedDeal": false,
+      "Client": "t1vkwus7ncp4pu22joheixz5rtkd7vv27jriw5eni",
+      "Provider": "t023449",
+      "Label": "",
+      "StartEpoch": 10503,
+      "EndEpoch": 637168,
+      "StoragePricePerEpoch": "500000000",
+      "ProviderCollateral": "2080768",
+      "ClientCollateral": "0"
+    },
+    "ClientSignature": {
+      "Type": 1,
+      "Data": "W+BTa0TKB3e5WTEsmKgq6ySpnANZIqnYAsIGXQt5R8FyfbIvxW3mJKryv12HVZ5nzLcDLhleTCrGBVVb/IVCEwA="
+    },
+    "ProposalCid": {
+      "/": "bafyreihotutpugx7i2m4so3e4budic6lgapoldlpozrv7wiyxu65byvgbm"
+    },
+    "AddFundsCid": {
+      "/": "bafy2bzacebc7pnlf2ltzrjkghxkwi3ac4l6weq3hljbpdfgpwv7fnsicufu2c"
+    },
+    "PublishCid": {
+      "/": "bafy2bzacedsv4osaog4outtuhmr54hcfmnqrjweqr4zm3yx2vj5qhbcp6tza4"
+    },
+    "Miner": "12D3KooWJ5pFoYnXdeCpmaSy7pmXP3D9c99bBoR7LWSz3cZERBEQ",
+    "Client": "12D3KooWPdcTdGF5kumSi6eZEhtpdBmJeh8Gw91TZxD3tCDp1mPN",
+    "State": 5,
+    "PiecePath": "fstmp328642200",
+    "MetadataPath": "",
+    "SlashEpoch": 0,
+    "FastRetrieval": true,
+    "Message": "",
+    "StoreID": null,
+    "Ref": {
+      "TransferType": "graphsync",
+      "Root": {
+        "/": "bafykbzacec5npiguqkrwcl6qmmf5zqp5p6xxcro5kw2mqfz7cugtmwg7xrzru"
+      },
+      "PieceCid": null,
+      "PieceSize": 0
+    },
+    "DealID": 15724
+  }
+]

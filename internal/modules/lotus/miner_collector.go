@@ -84,7 +84,7 @@ func (m *minerCollector) Update(ch chan<- prometheus.Metric) error {
 
 	scoresMap := make(map[string]float64, len(scores))
 	for _, score := range scores {
-		scoresMap[score.ID.Pretty()] = score.Score
+		scoresMap[score.ID.Pretty()] = score.Score.Score
 	}
 
 	for _, peer := range peers {

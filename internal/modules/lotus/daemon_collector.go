@@ -3,6 +3,7 @@ package lotus
 import (
 	"fildr-cli/internal/gateway"
 	"fildr-cli/internal/log"
+	"github.com/libp2p/go-libp2p-core/peer"
 	"github.com/prometheus/client_golang/prometheus"
 	"strconv"
 )
@@ -59,9 +60,9 @@ func (d *daemonCollector) Update(ch chan<- prometheus.Metric) error {
 		return err
 	}
 
-	scoresMap := make(map[string]float64, len(scores))
+	scoresMap := make(map[peer.ID]float64, len(scores))
 	for _, score := range scores {
-		scoresMap[score.ID.Pretty()] = score.Score
+		scoresMap[score.ID] = score.Score.Score
 	}
 
 	for _, peer := range peers {
@@ -71,7 +72,7 @@ func (d *daemonCollector) Update(ch chan<- prometheus.Metric) error {
 			continue
 		}
 
-		score, ok := scoresMap[peer.ID.Pretty()]
+		score, ok := scoresMap[peer.ID]
 		if !ok {
 			score = 0
 		}
